@@ -10,16 +10,23 @@ body {
     min-height: 100vh;
 }
 
-
+/* Clase específica para páginas de autenticación */
 body.pagina-auth {
     height: 100vh;
     overflow: hidden;
 }
 
-
+/* Clase para página principal */
 body.pagina-principal {
-    background: #f5f5f5;
+    background: #ffffff;
     padding: 20px;
+    overflow: auto;
+}
+
+/* Clase para página de cerrar sesión */
+body.pagina-logout {
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* ===== ESTILO PARA PÁGINA PRINCIPAL ===== */
@@ -36,46 +43,46 @@ body.pagina-principal {
     display: block;
     width: 140px;
     height: auto;
-    margin-bottom: 40px;
 }
 
 /* ===== BARRA DE BÚSQUEDA ===== */
 .search-bar {
     background: white;
     border-radius: 50px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
     display: flex;
     align-items: center;
     padding: 8px 8px 8px 24px;
-    max-width: 700px;
+    max-width: 850px;
     width: 100%;
-    margin: 0 auto;
+    margin: 0 auto 50px;
+    border: 1px solid #DDDDDD;
 }
 
 .search-option {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 12px 20px;
+    padding: 10px 24px;
     cursor: pointer;
     transition: background 0.2s;
+    border-radius: 32px;
 }
 
 .search-option:hover {
-    background: #f9f9f9;
-    border-radius: 30px;
+    background: #EBEBEB;
 }
 
 .search-option .label {
     font-size: 12px;
     font-weight: 600;
-    color: #333;
+    color: #222222;
     margin-bottom: 2px;
 }
 
 .search-option .value {
     font-size: 14px;
-    color: #999;
+    color: #717171;
     font-weight: 400;
 }
 
@@ -83,20 +90,20 @@ body.pagina-principal {
     background: #FDB44B;
     border: none;
     border-radius: 50%;
-    width: 56px;
-    height: 56px;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.2s;
     color: white;
     flex-shrink: 0;
 }
 
 .search-button:hover {
     background: #e9a03a;
-    transform: scale(1.05);
+    transform: scale(1.04);
 }
 
 /* ===== PROPIEDADES/TARJETAS ===== */
@@ -183,17 +190,17 @@ body.pagina-principal {
 }
 
 .estrella {
-    color: #717171;
+    color: #222222;
     font-size: 12px;
 }
 
 .valor-rating {
     font-size: 14px;
-    color: #717171;
+    color: #222222;
     font-weight: 400;
 }
 
-/* ===== MENÚ  ===== */
+/* ===== MENÚ HAMBURGUESA ===== */
 .menu-hamburguesa {
     position: relative;
 }
@@ -289,6 +296,29 @@ body.pagina-principal {
     align-items: center;
 }
 
+/* Fondo decorativo izquierdo - Círculos */
+.seccion-izquierda::before {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(200, 200, 200, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.seccion-izquierda::after {
+    content: '';
+    position: absolute;
+    top: -150px;
+    right: -150px;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(180, 180, 180, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
 .logo-container {
     position: absolute;
     top: 20px;
@@ -380,55 +410,93 @@ body.pagina-principal {
 
 .seccion-derecha {
     flex: 1;
-    background: #5B8A8F;
+    background: linear-gradient(135deg, #5B8A8F 0%, #6B9A9F 50%, #7BAAAF 100%);
     display: flex;
-    padding: 80px 60px;
-    position: relative;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fondos decorativos derecha - Formas orgánicas */
+.seccion-derecha::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    animation: float 20s ease-in-out infinite;
+}
+
+.seccion-derecha::after {
+    content: '';
+    position: absolute;
+    bottom: -150px;
+    left: -150px;
+    width: 500px;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation: float 15s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+        transform: translate(30px, -30px) rotate(5deg);
+    }
+    66% {
+        transform: translate(-20px, 20px) rotate(-5deg);
+    }
 }
 
 .contenido-registro {
-    text-align: left;
-    max-width: 350px;
-    margin-left: 40px;
+    text-align: center;
+    max-width: 400px;
+    position: relative;
+    z-index: 10;
 }
 
 .titulo-registro {
-    font-size: 42px;
-    font-weight: 700;
+    font-size: 36px;
+    font-weight: 600;
     color: white;
-    margin-bottom: 30px;
-    line-height: 1.2;
+    margin-bottom: 24px;
 }
 
 .texto-registro {
-    font-size: 17px;
+    font-size: 16px;
     color: white;
-    line-height: 1.7;
-    margin-bottom: 50px;
-    opacity: 1;
+    line-height: 1.6;
+    margin-bottom: 40px;
+    opacity: 0.95;
 }
 
 .boton-registro {
-    padding: 16px 50px;
+    padding: 14px 40px;
     background: white;
     color: #5B8A8F;
     border: none;
-    border-radius: 30px;
+    border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    display: inline-block;
 }
 
 .boton-registro:hover {
-    background: #F0F0F0;
+    background: #F7F7F7;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
+/* Inversión para registro */
 .contenedor-principal.invertido {
     flex-direction: row-reverse;
 }
@@ -443,6 +511,84 @@ body.pagina-principal {
 .logo-registro {
     width: 120px;
     height: auto;
+}
+
+/* ===== ESTILOS PARA CERRAR SESIÓN ===== */
+.contenedor-logout {
+    width: 100%;
+    height: 100vh;
+    background: #5B8A8F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-logout {
+    background: white;
+    border-radius: 24px;
+    padding: 50px 60px;
+    max-width: 450px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.icono-logout {
+    margin-bottom: 30px;
+}
+
+.icono-logout svg {
+    display: block;
+}
+
+.texto-logout {
+    font-size: 16px;
+    color: #222222;
+    text-align: center;
+    margin-bottom: 40px;
+    line-height: 1.5;
+}
+
+.botones-logout {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.boton-confirmar,
+.boton-cancelar {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.boton-confirmar {
+    background: #5B8A8F;
+    color: white;
+}
+
+.boton-confirmar:hover {
+    background: #4A7378;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(91, 138, 143, 0.3);
+}
+
+.boton-cancelar {
+    background: #E8E8E8;
+    color: #222222;
+}
+
+.boton-cancelar:hover {
+    background: #D8D8D8;
+    transform: translateY(-2px);
 }
 
 /* ===== RESPONSIVE ===== */
@@ -512,6 +658,26 @@ body.pagina-principal {
     .contenedor-img {
         height: 200px;
     }
+
+    .modal-logout {
+        padding: 40px 30px;
+        max-width: 350px;
+    }
+
+    .icono-logout svg {
+        width: 60px;
+        height: 60px;
+    }
+
+    .texto-logout {
+        font-size: 15px;
+    }
+
+    .boton-confirmar,
+    .boton-cancelar {
+        padding: 14px;
+        font-size: 15px;
+    }
 }
 
 @media (max-width: 568px) {
@@ -534,6 +700,13 @@ body.pagina-principal {
 
     .logo-registro {
         width: 70px;
+    }
+
+    .seccion-izquierda::before,
+    .seccion-izquierda::after,
+    .seccion-derecha::before,
+    .seccion-derecha::after {
+        display: none;
     }
 }
 

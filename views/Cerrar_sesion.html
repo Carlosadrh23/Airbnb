@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerrar sesión - HomeAway</title>
+    <link rel="stylesheet" href="/Airbnb/assets/styles.css">
+</head>
+<body>
+    <div class="contenedor-logout">
+        <div class="modal-logout">
+            <!-- Icono de cerrar sesión -->
+            <div class="icono-logout">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="1.5">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </div>
+
+            <p class="texto-logout">¿Desea cerrar la sesión de su cuenta?</p>
+
+            <div class="botones-logout">
+                <button class="boton-confirmar" id="btnConfirmar">Cerrar sesión</button>
+                <button class="boton-cancelar" id="btnCancelar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnConfirmar = document.getElementById('btnConfirmar');
+            const btnCancelar = document.getElementById('btnCancelar');
+
+            // Cerrar sesión
+            btnConfirmar.addEventListener('click', function() {
+                
+                
+                localStorage.removeItem('usuarioLogueado');
+                localStorage.removeItem('usuarioRegistrado');
+                localStorage.removeItem('loginExitoso');
+                
+                // mandar al login
+                window.location.href = 'Principal.html';
+            });
+
+            // cancelar y volver a la pagina principal
+            btnCancelar.addEventListener('click', function() {
+                window.location.href = 'Principal.html';
+            });
+        });
+    </script>
+</body>
+</html>
