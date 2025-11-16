@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeAway - Búsqueda de Alojamientos</title>
+    <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body class="pagina-principal">
+  
+   <header class="header">
+    <img src="../assets/img/Logo_azul.png" alt="Logo" class="logo">
+    
+    <div class="menu-container">
+        <!-- Ícono de usuario (solo visible si hay sesión) -->
+        <div class="icono-usuario" id="iconoUsuario" style="display: none;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+        </div>
+        
+        <!-- Menú hamburguesa (SIEMPRE visible) -->
+        <div class="menu-hamburguesa">
+            <button class="boton-menu">
+                <span class="linea"></span>
+                <span class="linea"></span>
+                <span class="linea"></span>
+            </button>
+            
+            <!-- Menú sin sesión -->
+            <div class="dropdown-menu" id="menuSinSesion">
+                <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
+                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+            </div>
+            
+            <!-- Menú con sesión (oculto inicialmente) -->
+            <div class="dropdown-menu" id="menuConSesion" style="display: none;">
+                <div class="user-info-menu">
+                    <strong id="nombreUsuarioMenu">Usuario</strong>
+                    <small id="emailUsuarioMenu">email@ejemplo.com</small>
+                </div>
+                <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
+                <a href="#" class="menu-item">Mi perfil</a>
+                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+                <a href="Cerrar_sesion.html" class="menu-item">Cerrar sesión</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+ <div class="search-bar">
+        <div class="search-option">
+            <span class="label">Destino</span>
+            <span class="value">Buscar destinos</span>
+        </div>
+        
+        <div class="search-option">
+            <span class="label">Fechas</span>
+            <span class="value">Agregar fechas</span>
+        </div>
+        
+        <div class="search-option">
+            <span class="label">Huéspedes</span>
+            <span class="value">¿Cuántos?</span>
+        </div>
+        
+        <button class="search-button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+        </button>
+    </div>
+
+     <h1>Condominio en Los Cabos</h1>
+
+   <div class="propiedades">
+    
+    <!-- Departamento Cabos -->
+    <div class="depa-cabos">
+        <div class="contenedor-img">
+            <img src="../assets/img/H-cabos.jpg" alt="Departamento en Cabos San Lucas" class="img-depa-cabos">
+        </div>
+        <div class="info-depa-cabos">
+            <h3 class="titulo-depa-cabos">Departamento en cabos san lucas</h3>
+            <p class="precio">$2500 MXN <span class="noches">por 2 noches</span></p>
+            <div class="rating">
+                <span class="estrella">★</span>
+                <span class="valor-rating">4,89</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+       <script src="../assets/javascript/main.js"></script>
+</body>
+</html>
