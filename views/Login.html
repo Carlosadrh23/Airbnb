@@ -4,29 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión - HomeAway</title>
-    <link rel="stylesheet" href="/Airbnb/assets/styles.css">
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
-<body>
-    <body class="pagina-auth">
+<body class="pagina-auth">
     <div class="contenedor-principal">
         <!-- Sección Izquierda - Login -->
         <div class="seccion-izquierda">
             <div class="logo-container">
-                <img src="/Airbnb/assets/img/Logo_azul.png" alt="HomeAway Logo" class="logo-login" >
+                <img src="../assets/img/Logo_azul.png" alt="HomeAway Logo" class="logo-login">
             </div>
 
             <div class="formulario-login">
                 <h1 class="titulo-login">Iniciar sesión</h1>
 
-             <form class="form-login" id="formLogin">
+                <form class="form-login" id="formLogin">
                     <div class="grupo-input">
                         <label for="email" class="label-input">Correo electrónico:</label>
-                        <input type="email" id="email" name="email" class="input-field" placeholder="" required>
+                        <input type="email" id="email" name="email" class="input-field" required>
                     </div>
 
                     <div class="grupo-input">
                         <label for="password" class="label-input">Contraseña:</label>
-                        <input type="password" id="password" name="password" class="input-field" placeholder="" required>
+                        <input type="password" id="password" name="password" class="input-field" required>
                     </div>
 
                     <button type="submit" class="boton-login">Iniciar sesión</button>
@@ -39,55 +38,11 @@
             <div class="contenido-registro">
                 <h2 class="titulo-registro">¿No tienes cuenta?</h2>
                 <p class="texto-registro">Regístrate para disfrutar de los mejores viajes por parte de nosotros</p>
-                <button class="boton-registro" onclick="window.location.href='registro.html'">Registrarse</button>
+                <button class="boton-registro" onclick="window.location.href='Registro.html'">Registrarse</button>
             </div>
         </div>
     </div>
-    <script>
-   
-    document.addEventListener('DOMContentLoaded', function() {
-        const formLogin = document.getElementById('formLogin');
-        
-        // Manejar el envío del formulario
-        formLogin.addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevenir recarga de página
-            
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            console.log('Formulario enviado'); // Para debug
-            console.log('Email:', email);
-            console.log('Password:', password);
-            
-            // Validar campos
-            if (!email || !password) {
-                alert('Por favor, completa todos los campos');
-                return;
-            }
-            
-            // Validar formato de email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Por favor, ingresa un correo electrónico válido');
-                return;
-            }
-            
-            // Validar contraseña minimo 6 caracteres
-            if (password.length < 6) {
-                alert('La contraseña debe tener al menos 6 caracteres');
-                return;
-            }
-            
-            // Guardar usuario
-            localStorage.setItem('usuarioLogueado', email);
-            
-            console.log('Redirigiendo a Principal.html'); // Para debug
-            
-            // Redirigir
-            window.location.href = 'Principal.html';
-        });
-    });
-</script>
-</body>
+
+    <script src="../assets/javascript/main.js"></script>
 </body>
 </html>

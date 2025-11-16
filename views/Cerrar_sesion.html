@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cerrar sesión - HomeAway</title>
-    <link rel="stylesheet" href="/Airbnb/assets/styles.css">
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body>
     <div class="contenedor-logout">
@@ -27,28 +27,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const btnConfirmar = document.getElementById('btnConfirmar');
-            const btnCancelar = document.getElementById('btnCancelar');
-
-            // Cerrar sesión
-            btnConfirmar.addEventListener('click', function() {
-                
-                
-                localStorage.removeItem('usuarioLogueado');
-                localStorage.removeItem('usuarioRegistrado');
-                localStorage.removeItem('loginExitoso');
-                
-                // mandar al login
-                window.location.href = 'Principal.html';
-            });
-
-            // cancelar y volver a la pagina principal
-            btnCancelar.addEventListener('click', function() {
-                window.location.href = 'Principal.html';
-            });
-        });
-    </script>
+    <script src="../assets/javascript/main.js"></script>
+    
 </body>
 </html>

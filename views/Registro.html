@@ -4,25 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro - HomeAway</title>
-    <link rel="stylesheet" href="/Airbnb/assets/styles.css">
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
-<body>
-    <body class="pagina-auth">
+<body class="pagina-auth">
     <div class="contenedor-principal">
         
         <div class="seccion-derecha">
             <div class="logo-container-izq">
-                <img src="/Airbnb/assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-registro">
+                <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-registro">
             </div>
             
             <div class="contenido-registro">
                 <h2 class="titulo-registro">¿Ya tienes cuenta?</h2>
                 <p class="texto-registro">Inicia sesión para disfrutar de los mejores viajes por parte de nosotros</p>
-                <button class="boton-registro" onclick="window.location.href='login.html'">Iniciar sesión</button>
+                <button class="boton-registro" onclick="window.location.href='Login.html'">Iniciar sesión</button>
             </div>
         </div>
 
-      <!--Registro a la derecha -->
+        <!-- Registro a la derecha -->
         <div class="seccion-izquierda">
             <div class="formulario-login">
                 <h1 class="titulo-login">Registro</h1>
@@ -49,60 +48,6 @@
         </div>
     </div>
 
-    <script>
-        console.log('Script de registro cargado');
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            const formRegistro = document.getElementById('formRegistro');
-            
-            if (formRegistro) {
-                formRegistro.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    
-                    const nombre = document.getElementById('nombre').value.trim();
-                    const email = document.getElementById('email').value.trim();
-                    const password = document.getElementById('password').value.trim();
-                    
-                    // Validar campos
-                    if (!nombre || !email || !password) {
-                        alert('Por favor, completa todos los campos');
-                        return;
-                    }
-                    
-                    // Validar nombre 
-                    if (nombre.length < 3) {
-                        alert('El nombre debe tener al menos 3 caracteres');
-                        return;
-                    }
-                    
-                    // Validar formato de email
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(email)) {
-                        alert('Por favor, ingresa un correo electrónico válido');
-                        return;
-                    }
-                    
-                    // Validar contraseña 
-                    if (password.length < 6) {
-                        alert('La contraseña debe tener al menos 6 caracteres');
-                        return;
-                    }
-                    
-                    // Guardar usuario
-                    localStorage.setItem('usuarioRegistrado', JSON.stringify({
-                        nombre: nombre,
-                        email: email
-                    }));
-                    localStorage.setItem('usuarioLogueado', email);
-                    
-                    alert('¡Registro exitoso! Bienvenido ' + nombre);
-                    
-                    // Redirigir a la página principal
-                    window.location.href = 'Principal.html';
-                });
-            }
-        });
-    </script>
-</body>
+    <script src="../assets/javascript/main.js"></script>
 </body>
 </html>

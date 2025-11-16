@@ -201,6 +201,12 @@ body.pagina-logout {
 }
 
 /* ===== MENÚ HAMBURGUESA ===== */
+.menu-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .menu-hamburguesa {
     position: relative;
 }
@@ -238,24 +244,22 @@ body.pagina-logout {
     box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     min-width: 240px;
     padding: 8px 0;
-    display: none;
     z-index: 1000;
+    
+    /* CAMBIO CRÍTICO: Usar visibility y opacity en lugar de display */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
 }
 
+/* Cuando el menú está activo */
 .dropdown-menu.active {
-    display: block;
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
 }
 
 .menu-item {
@@ -271,10 +275,35 @@ body.pagina-logout {
     background: #F7F7F7;
 }
 
-.menu-item:first-child {
+/* Estilos para el info de usuario */
+.user-info-menu {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     border-bottom: 1px solid #EBEBEB;
-    padding-bottom: 16px;
     margin-bottom: 4px;
+}
+
+.user-info-menu strong {
+    font-size: 15px;
+    color: #222222;
+    font-weight: 600;
+}
+
+.user-info-menu small {
+    font-size: 13px;
+    color: #717171;
+}
+
+/* Ícono de usuario */
+.icono-usuario {
+    cursor: pointer;
+    display: none; /* Oculto por defecto */
+}
+
+.icono-usuario svg {
+    stroke: #222222;
 }
 
 /* ===== ESTILOS PARA LOGIN/REGISTRO ===== */
@@ -295,18 +324,6 @@ body.pagina-logout {
     justify-content: center;
     align-items: center;
 }
-
-/* Fondo decorativo izquierdo - Círculos 
-.seccion-izquierda::before {
-    content: '';
-    position: absolute;
-    bottom: -100px;
-    left: -100px;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(200, 200, 200, 0.3) 0%, transparent 70%);
-    border-radius: 50%;
-}*/
 
 .seccion-izquierda::after {
     content: '';
