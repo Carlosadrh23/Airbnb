@@ -33,7 +33,7 @@ function inicializarRegistro() {
 
             if (resultado.success) {
                 alert('¡Registro exitoso! Bienvenido ' + nombre);
-                window.location.href = 'Principal.html';
+                window.location.href = '../Index.html';
             } else {
                 alert(resultado.message);
             }
@@ -73,7 +73,7 @@ function inicializarLogin() {
 
             if (resultado.success) {
                 alert('¡Bienvenido ' + resultado.usuario.nombre + '!');
-                window.location.href = 'Principal.html';
+                window.location.href = '../Index.html';
             } else {
                 alert(resultado.message);
             }
@@ -105,7 +105,7 @@ function inicializarCerrarSesion() {
 
                 if (resultado.success) {
                     alert('Sesión cerrada correctamente');
-                    window.location.href = 'Principal.html';
+                    window.location.href = '../Index.html';
                 }
             } catch (err) {
                 console.error('Error:', err);
@@ -116,7 +116,7 @@ function inicializarCerrarSesion() {
 
     if (btnCancelar) {
         btnCancelar.addEventListener('click', function() {
-            window.location.href = 'Principal.html';
+            window.location.href = '../Index.html';
         });
     }
 }
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     inicializarCerrarSesion();
     inicializarMenu();
 
-    if (window.location.pathname.includes('Principal.html')) {
+    if (window.location.pathname.includes('../Index.html')) {
         console.log('Verificando sesión en Principal');
         verificarSesion();
     }
