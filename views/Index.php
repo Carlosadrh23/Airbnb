@@ -1,3 +1,7 @@
+<?php
+
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -30,11 +34,11 @@
             
             <!-- Menú sin sesión -->
             <div class="dropdown-menu" id="menuSinSesion">
-                <a href="views/Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
+                <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
                 <a href="#" class="menu-item">Conviertete en anfitrión</a>
             </div>
             
-            <!-- Menú con sesión (oculto inicialmente) -->
+            <!-- Menú con sesión -->
             <div class="dropdown-menu" id="menuConSesion" style="display: none;">
                 <div class="user-info-menu">
                     <strong id="nombreUsuarioMenu">Usuario</strong>
@@ -43,7 +47,7 @@
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
                 <a href="#" class="menu-item">Mi perfil</a>
                 <a href="#" class="menu-item">Conviertete en anfitrión</a>
-                <a href="CerrarSesion.html" class="menu-item">Cerrar sesión</a>
+               <a href="CerrarSession.html" class="menu-item">Cerrar sesión</a>
             </div>
         </div>
     </div>
@@ -76,7 +80,7 @@
    <div class="propiedades">
     
     <!-- Condominio CDMX -->
-<a href="views/CondominioCDMX.html">
+<a href="CondominioCDMX.html">
     <div class="condominio">
         <div class="contenedor-img">
             <img src="../assets/img/condominio.png" alt="Condominio en Ciudad de México" class="img-condominio" style="width: 300px;">
@@ -93,7 +97,7 @@
 </a>
 
     <!-- Departamento Guadalajara -->
-<a href="views/CondominioGDL.html">
+<a href="CondominioGDL.html">
     <div class="depa-gdl">
         <div class="contenedor-img">
             <img src="../assets/img/depa_gdl.png" alt="Departamento en Guadalajara" class="img-depa-gdl" style="width: 300px;">
@@ -110,7 +114,7 @@
 </a>
 
     <!-- Departamento La Paz -->
-<a href="views/CondominioLPZ.html">
+<a href="CondominioLPZ.html">
     <div class="depa-lapaz">
         <div class="contenedor-img">
             <img src="../assets/img/depa_lapaz.png" alt="Departamento en La Paz BCS" class="img-depa-lapaz" style="width: 300px;">
@@ -127,7 +131,7 @@
 </a>
 
     <!-- Departamento Cabos -->
-<a href="views/CondominioLosCabos.html">
+<a href="CondominioLosCabos.html">
     <div class="depa-cabos">
         <div class="contenedor-img">
             <img src="../assets/img/H-cabos.jpg" alt="Departamento en Cabos San Lucas" class="img-depa-cabos" style="width: 300px;">

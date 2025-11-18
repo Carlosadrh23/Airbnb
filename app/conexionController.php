@@ -1,45 +1,28 @@
 <?php
 class conexionController {
-    private $host;
-    private $port;
-    private $dbname;
-    private $username;
-    private $password;
+    // CONFIGURACIÓN CORREGIDA PARA INFINITY FREE
+    private $host = 'sql105.infinityfree.com'; // El hostname de tu panel
+    private $dbname = 'if0_40439028_airbnb';
+    private $username = 'if0_40439028';
+    private $password = 'CjNuGYp519Ho';
     private $conexion;
 
     public function __construct() {
-        // Detectar si estamos en local o en producción
-        $isLocal = $_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_NAME'] === '127.0.0.1';
-
-        if ($isLocal) {
-            // CONFIGURACIÓN LOCAL XAMPP
-            $this->host = 'localhost';
-            $this->port = '3307'; // Puerto de mysql en xampp
-            $this->dbname = 'homeaway';
-            $this->username = 'root';
-            $this->password = '';
-        } else {
-            // CONFIGURACIÓN DE HOSTING (InfinityFree)
-            $this->host = 'sql303.infinityfree.com';
-            $this->port = '3306';
-            $this->dbname = 'if0_40431484_projectoairbnbhomeaway';
-            $this->username = 'if0_40431484';
-            $this->password = 'dWCM70G7FWwQU8x';
-        }
-
         try {
             $this->conexion = new PDO(
-                "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset=utf8mb4",
+                "mysql:host={$this->host};dbname={$this->dbname};charset=utf8mb4",
                 $this->username,
                 $this->password,
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_TIMEOUT => 5 // Timeout de 5 segundos
                 ]
             );
         } catch (PDOException $e) {
-            die("Error de conexión: " . $e->getMessage());
+            error_log("Error de conexión BD Infinity Free: " . $e->getMessage());
+            $this->conexion = null;
         }
     }
 

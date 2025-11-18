@@ -1,226 +1,285 @@
-// CONFIGURACIÓN GENERAL PARA HOSTING
-const API_URL = '../app/AuthController.php'; // Ruta relativa desde views/
+const API_URL = '../app/AuthController.php';
 
-// =======================================================================
-//                           REGISTRO
-// =======================================================================
+// FUNCIÓN PRINCIPAL PARA PETICIONES
+async function hacerPeticion(accion, datos = {}) {
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include',
+            body: JSON.stringify({accion, ...datos})
+        });
+        
+        const texto = await response.text();
+        
+        try {
+            return JSON.parse(texto);
+        } catch (e) {
+            console.error('Respuesta no JSON:', texto);
+            return {
+                success: false,
+                message: 'Error del servidor: respuesta invalida'
+            };
+        }
+    } catch (err) {
+        console.error('Error de conexion:', err);
+        return {
+            success: false,
+            message: 'Error de conexion con el servidor'
+        };
+    }
+}
+
+// INICIALIZAR MENÚ HAMBURGUESA (siempre visible)
+function inicializarMenuHamburguesa() {
+    const botonMenu = document.querySelector('.boton-menu');
+    const menuSinSesion = document.getElementById('menuSinSesion');
+    const menuConSesion = document.getElementById('menuConSesion');
+    
+    if (botonMenu) {
+        botonMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log(' Clic en menú hamburguesa');
+            
+            // Determinar qué menú mostrar según la sesión
+            const menuActivo = menuConSesion.style.display !== 'none' ? menuConSesion : menuSinSesion;
+            
+            if (menuActivo.classList.contains('active')) {
+                menuActivo.classList.remove('active');
+            } else {
+                // Cerrar otros menús primero
+                menuSinSesion.classList.remove('active');
+                menuConSesion.classList.remove('active');
+                // Abrir menú activo
+                menuActivo.classList.add('active');
+            }
+        });
+        
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', function() {
+            menuSinSesion.classList.remove('active');
+            menuConSesion.classList.remove('active');
+        });
+        
+        // Prevenir que se cierre al hacer clic dentro del menú
+        menuSinSesion.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        menuConSesion.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        console.log('✅ Menú hamburguesa inicializado');
+    }
+}
+
+// INICIALIZAR ICONO DE USUARIO (solo cuando hay sesión)
+function inicializarIconoUsuario() {
+    const iconoUsuario = document.getElementById('iconoUsuario');
+    
+    if (iconoUsuario && iconoUsuario.style.display !== 'none') {
+        iconoUsuario.addEventListener('click', function(e) {
+            e.stopPropagation();
+            console.log(' Clic en icono usuario');
+            
+            const menuConSesion = document.getElementById('menuConSesion');
+            if (menuConSesion.classList.contains('active')) {
+                menuConSesion.classList.remove('active');
+            } else {
+                // Cerrar otros menús primero
+                document.getElementById('menuSinSesion').classList.remove('active');
+                // Abrir menú de usuario
+                menuConSesion.classList.add('active');
+            }
+        });
+        
+        console.log(' Icono usuario inicializado');
+    }
+}
+
+// REGISTRO
 function inicializarRegistro() {
     const formRegistro = document.getElementById('formRegistro');
     if (!formRegistro) return;
 
     formRegistro.addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const nombre = document.getElementById('nombre').value.trim();
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
 
-        if (!nombre || !email || !password) return alert('Completa todos los campos');
-        if (nombre.length < 3) return alert('El nombre debe tener al menos 3 caracteres');
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Correo inválido');
-        if (password.length < 6) return alert('La contraseña debe tener mínimo 6 caracteres');
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ accion: 'registro', nombre, email, password })
-            });
-
-            const resultado = await response.json();
-            console.log('Respuesta registro:', resultado);
-
-            if (resultado.success) {
-                alert('¡Registro exitoso! Bienvenido ' + nombre);
-                window.location.href = '../Index.html';
-            } else {
-                alert(resultado.message);
-            }
-        } catch (err) {
-            console.error('Error:', err);
-            alert('Error de conexión.');
+        if (!nombre || !email || !password) {
+            alert('Completa todos los campos');
+            return;
         }
+
+        const btnSubmit = formRegistro.querySelector('button[type="submit"]');
+        const textoOriginal = btnSubmit.textContent;
+        btnSubmit.textContent = 'Registrando...';
+        btnSubmit.disabled = true;
+
+        const resultado = await hacerPeticion('registro', {nombre, email, password});
+
+        if (resultado.success) {
+            alert('Registro exitoso');
+            window.location.href = 'index.php';
+        } else {
+            alert('Error: ' + resultado.message);
+        }
+
+        btnSubmit.textContent = textoOriginal;
+        btnSubmit.disabled = false;
     });
 }
 
-// =======================================================================
-//                              LOGIN
-// =======================================================================
+// LOGIN
 function inicializarLogin() {
     const formLogin = document.getElementById('formLogin');
     if (!formLogin) return;
 
     formLogin.addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
 
-        if (!email || !password) return alert('Completa todos los campos');
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return alert('Correo inválido');
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ accion: 'login', email, password })
-            });
-
-            const resultado = await response.json();
-            console.log('Respuesta login:', resultado);
-
-            if (resultado.success) {
-                alert('¡Bienvenido ' + resultado.usuario.nombre + '!');
-                window.location.href = '../Index.html';
-            } else {
-                alert(resultado.message);
-            }
-        } catch (err) {
-            console.error('Error:', err);
-            alert('Error al iniciar sesión');
+        if (!email || !password) {
+            alert('Completa todos los campos');
+            return;
         }
+
+        const btnSubmit = formLogin.querySelector('button[type="submit"]');
+        const textoOriginal = btnSubmit.textContent;
+        btnSubmit.textContent = 'Iniciando sesion...';
+        btnSubmit.disabled = true;
+
+        const resultado = await hacerPeticion('login', {email, password});
+
+        if (resultado.success) {
+            alert('Bienvenido');
+            window.location.href = 'index.php';
+        } else {
+            alert('Error: ' + resultado.message);
+        }
+
+        btnSubmit.textContent = textoOriginal;
+        btnSubmit.disabled = false;
     });
 }
 
-// =======================================================================
-//                         CERRAR SESIÓN
-// =======================================================================
-function inicializarCerrarSesion() {
-    const btnConfirmar = document.getElementById('btnConfirmar');
-    const btnCancelar = document.getElementById('btnCancelar');
-
-    if (btnConfirmar) {
-        btnConfirmar.addEventListener('click', async function() {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ accion: 'logout' })
-                });
-
-                const resultado = await response.json();
-
-                if (resultado.success) {
-                    alert('Sesión cerrada correctamente');
-                    window.location.href = '../Index.html';
-                }
-            } catch (err) {
-                console.error('Error:', err);
-                alert('Error al cerrar sesión');
-            }
-        });
-    }
-
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', function() {
-            window.location.href = '../Index.html';
-        });
-    }
-}
-
-// =======================================================================
-//                         MENÚ HAMBURGUESA
-// =======================================================================
-function inicializarMenu() {
-    const botonMenu = document.querySelector('.boton-menu');
-    const menuSinSesion = document.getElementById('menuSinSesion');
-    const menuConSesion = document.getElementById('menuConSesion');
-
-    if (botonMenu) {
-        botonMenu.addEventListener('click', function(e) {
-            e.stopPropagation();
-            
-            if (menuSinSesion && menuSinSesion.style.display !== 'none') {
-                menuSinSesion.classList.toggle('active');
-            }
-            if (menuConSesion && menuConSesion.style.display !== 'none') {
-                menuConSesion.classList.toggle('active');
-            }
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.menu-hamburguesa')) {
-                if (menuSinSesion) menuSinSesion.classList.remove('active');
-                if (menuConSesion) menuConSesion.classList.remove('active');
-            }
-        });
-    }
-}
-
-// =======================================================================
-//                       VERIFICAR SESIÓN
-// =======================================================================
+// VERIFICAR SESIÓN - ACTUALIZADA
 async function verificarSesion() {
-    console.log('Verificando sesión...');
-    
     try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ accion: 'verificar_sesion' })
-        });
-
-        const resultado = await response.json();
-        console.log('Resultado de sesión:', resultado);
-
-        const iconoUsuario = document.querySelector('.icono-usuario');
-        const menuHamburguesa = document.querySelector('.menu-hamburguesa');
+        const resultado = await hacerPeticion('verificar_sesion');
+        
+        const iconoUsuario = document.getElementById('iconoUsuario');
         const menuSinSesion = document.getElementById('menuSinSesion');
         const menuConSesion = document.getElementById('menuConSesion');
         const nombreUsuarioMenu = document.getElementById('nombreUsuarioMenu');
         const emailUsuarioMenu = document.getElementById('emailUsuarioMenu');
 
-        if (resultado.logueado && resultado.usuario) {
-            console.log('Usuario logueado:', resultado.usuario.nombre);
+        console.log(' Estado sesión:', resultado);
+
+        if (resultado.success && resultado.logueado) {
+            console.log('Usuario logueado - Mostrando menú usuario');
             
+            // Mostrar icono de usuario y menú con sesión
             if (iconoUsuario) iconoUsuario.style.display = 'flex';
-            if (menuHamburguesa) menuHamburguesa.style.display = 'block';
             if (menuSinSesion) menuSinSesion.style.display = 'none';
             if (menuConSesion) menuConSesion.style.display = 'block';
             
-            if (nombreUsuarioMenu) nombreUsuarioMenu.textContent = resultado.usuario.nombre;
-            if (emailUsuarioMenu) emailUsuarioMenu.textContent = resultado.usuario.email;
+            // Actualizar información del usuario en el menú
+            if (nombreUsuarioMenu && resultado.usuario) {
+                nombreUsuarioMenu.textContent = resultado.usuario.nombre || 'Usuario';
+            }
+            if (emailUsuarioMenu && resultado.usuario) {
+                emailUsuarioMenu.textContent = resultado.usuario.email || '';
+            }
+            
+            // INICIALIZAR EL ICONO DE USUARIO DESPUÉS DE MOSTRARLO
+            setTimeout(inicializarIconoUsuario, 100);
             
         } else {
-            console.log('Sin sesión activa');
-            
+            console.log(' Usuario NO logueado - Mostrando menú normal');
             if (iconoUsuario) iconoUsuario.style.display = 'none';
-            if (menuHamburguesa) menuHamburguesa.style.display = 'block';
             if (menuSinSesion) menuSinSesion.style.display = 'block';
             if (menuConSesion) menuConSesion.style.display = 'none';
         }
     } catch (err) {
-        console.error('Error verificando sesión:', err);
-        
-        const iconoUsuario = document.querySelector('.icono-usuario');
-        const menuHamburguesa = document.querySelector('.menu-hamburguesa');
-        const menuSinSesion = document.getElementById('menuSinSesion');
-        const menuConSesion = document.getElementById('menuConSesion');
-        
-        if (iconoUsuario) iconoUsuario.style.display = 'none';
-        if (menuHamburguesa) menuHamburguesa.style.display = 'block';
-        if (menuSinSesion) menuSinSesion.style.display = 'block';
-        if (menuConSesion) menuConSesion.style.display = 'none';
+        console.error('Error verificando sesion:', err);
     }
 }
 
-// =======================================================================
-//                        INICIALIZAR TODO
-// =======================================================================
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Cargado - Sistema inicializado');
+// CERRAR SESION - COMPLETO CON BOTÓN CANCELAR
+function inicializarCerrarSesion() {
+    const btnConfirmar = document.getElementById('btnConfirmar');
+    const btnCancelar = document.getElementById('btnCancelar');
     
+    // Botón Confirmar (Cerrar Sesión)
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', async function() {
+            try {
+                console.log(' Confirmando cierre de sesión...');
+                const resultado = await hacerPeticion('logout');
+                if (resultado.success) {
+                    alert('Sesión cerrada');
+                    window.location.href = 'index.php';
+                }
+            } catch (err) {
+                console.error('Error al cerrar sesión:', err);
+                alert('Error al cerrar sesión');
+            }
+        });
+    }
+    
+    // Botón Cancelar (Regresar)
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', function() {
+            console.log(' Cancelar - Regresando...');
+            // Regresar a la página anterior o al index
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back(); // Regresa a la página anterior
+            } else {
+                window.location.href = 'index.php'; // Si no hay página anterior, va al index
+            }
+        });
+    }
+    
+    console.log('Botones de cerrar sesión inicializados');
+}
+
+// INICIALIZAR MENÚ BÁSICO (para menús sin sesión)
+function inicializarMenuBasico() {
+    console.log('🔧 Inicializando menús básicos...');
+    
+    // Buscar elementos de menú comunes y hacerlos clickeables
+    const elementosMenu = document.querySelectorAll('nav a, .menu a, [class*="menu"] a');
+    elementosMenu.forEach(elemento => {
+        elemento.addEventListener('click', function(e) {
+            console.log(' Clic en menú:', e.target.textContent);
+        });
+    });
+}
+
+// INICIALIZAR TODO
+document.addEventListener('DOMContentLoaded', function() {
+    console.log(' Inicializando aplicación...');
+    
+    // Inicializar menús
+    inicializarMenuHamburguesa();
+    inicializarMenuBasico();
+    
+    // Inicializar formularios
     inicializarRegistro();
     inicializarLogin();
     inicializarCerrarSesion();
-    inicializarMenu();
+    
+    // Verificar sesión (esto inicializará el icono de usuario si hay sesión)
+    verificarSesion();
+    
+    console.log(' Aplicación inicializada');
+});
 
-    if (window.location.pathname.includes('../Index.html')) {
-        console.log('Verificando sesión en Principal');
-        verificarSesion();
-    }
+// DEBUG: Verificar clics en toda la página
+document.addEventListener('click', function(e) {
+    console.log('🖱️ Clic general en:', e.target.tagName, e.target.className);
 });

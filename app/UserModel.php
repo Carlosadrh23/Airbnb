@@ -9,8 +9,11 @@ class UserModel {
         $this->conexion = $db->getConexion();
     }
 
-    // Registrar nuevo usuario
     public function registrarUsuario($nombre, $email, $password) {
+        if (!$this->conexion) {
+            return ['success' => false, 'message' => 'Error de conexión con la base de datos'];
+        }
+
         try {
             // Verificar si el email ya existe
             $stmt = $this->conexion->prepare("SELECT id FROM usuarios WHERE email = ?");
@@ -39,12 +42,16 @@ class UserModel {
             }
 
         } catch (PDOException $e) {
-            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+            error_log("Error en registro: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error en el servidor de base de datos'];
         }
     }
 
-    // Iniciar sesión
     public function iniciarSesion($email, $password) {
+        if (!$this->conexion) {
+            return ['success' => false, 'message' => 'Error de conexión con la base de datos'];
+        }
+
         try {
             $stmt = $this->conexion->prepare(
                 "SELECT id, nombre, email, password FROM usuarios WHERE email = ?"
@@ -52,36 +59,40 @@ class UserModel {
             $stmt->execute([$email]);
             $usuario = $stmt->fetch();
 
-            if ($usuario && password_verify($password, $usuario['password'])) {
-                // Contraseña correcta
-                return [
-                    'success' => true,
-                    'message' => 'Inicio de sesión exitoso',
-                    'usuario' => [
-                        'id' => $usuario['id'],
-                        'nombre' => $usuario['nombre'],
-                        'email' => $usuario['email']
-                    ]
-                ];
+            if ($usuario) {
+                if (password_verify($password, $usuario['password'])) {
+                    return [
+                        'success' => true,
+                        'message' => 'Inicio de sesión exitoso',
+                        'usuario' => [
+                            'id' => $usuario['id'],
+                            'nombre' => $usuario['nombre'],
+                            'email' => $usuario['email']
+                        ]
+                    ];
+                } else {
+                    return ['success' => false, 'message' => 'Contraseña incorrecta'];
+                }
             } else {
-                return ['success' => false, 'message' => 'Correo o contraseña incorrectos'];
+                return ['success' => false, 'message' => 'Usuario no encontrado'];
             }
 
         } catch (PDOException $e) {
-            return ['success' => false, 'message' => 'Error: ' . $e->getMessage()];
+            error_log("Error en login: " . $e->getMessage());
+            return ['success' => false, 'message' => 'Error en el servidor de base de datos'];
         }
     }
 
-    // Obtener usuario por email
-    public function obtenerUsuarioPorEmail($email) {
+    public function verificarConexionBD() {
+        if (!$this->conexion) {
+            return false;
+        }
+        
         try {
-            $stmt = $this->conexion->prepare(
-                "SELECT id, nombre, email FROM usuarios WHERE email = ?"
-            );
-            $stmt->execute([$email]);
-            return $stmt->fetch();
+            $this->conexion->query("SELECT 1");
+            return true;
         } catch (PDOException $e) {
-            return null;
+            return false;
         }
     }
 }

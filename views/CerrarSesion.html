@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cerrar sesión - HomeAway</title>
+    <!-- CAMBIA ESTA RUTA -->
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
-<body>
+<body class="pagina-logout">
     <div class="contenedor-logout">
         <div class="modal-logout">
-            <!-- Icono de cerrar sesión -->
             <div class="icono-logout">
                 <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="1.5">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -21,13 +21,44 @@
             <p class="texto-logout">¿Desea cerrar la sesión de su cuenta?</p>
 
             <div class="botones-logout">
-                <button class="boton-confirmar" id="btnConfirmar">Cerrar sesión</button>
-                <button class="boton-cancelar" id="btnCancelar">Cancelar</button>
+                <button class="boton-confirmar" onclick="cerrarSesionDirecto()">Cerrar sesión</button>
+                <button class="boton-cancelar" onclick="cancelarDirecto()">Cancelar</button>
             </div>
         </div>
     </div>
 
-    <script src="../assets/javascript/main.js"></script>
-    
+    <script>
+        // Función para Cerrar Sesión
+        async function cerrarSesionDirecto() {
+            try {
+                const response = await fetch('../app/AuthController.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    credentials: 'include',
+                    body: JSON.stringify({accion: 'logout'})
+                });
+                
+                const resultado = await response.json();
+                
+                if (resultado.success) {
+                    alert('Sesión cerrada correctamente');
+                    window.location.href = 'index.php';
+                } else {
+                    alert('Error: ' + resultado.message);
+                }
+            } catch (error) {
+                alert('Error de conexión');
+            }
+        }
+        
+        // Función para Cancelar
+        function cancelarDirecto() {
+            if (document.referrer && document.referrer.includes(window.location.hostname)) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.php';
+            }
+        }
+    </script>
 </body>
 </html>

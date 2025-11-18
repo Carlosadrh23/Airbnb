@@ -1,54 +1,110 @@
 <?php
-// CONFIGURACIÓN DE SESIÓN - IMPORTANTE: Configurar ANTES de session_start()
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+// CONFIGURACIÓN DE SESIÓN
+ini_set('display_errors', 0);
+error_reporting(0);
 
 // Configuración de sesión
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_samesite', 'Lax');
-ini_set('session.cookie_lifetime', 86400); // 24 horas
-ini_set('session.gc_maxlifetime', 86400);
 
-// Configurar parámetros de cookie
-session_set_cookie_params([
-    'lifetime' => 86400,
-    'path' => '/',
-    'domain' => '',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-// Iniciar sesión
 session_start();
 
-// Headers JSON
+// Headers PRIMERO
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Credentials: true');
-
-// LOG DE DIAGNÓSTICO
-error_log("=== NUEVA REQUEST ===");
-error_log("Método: " . $_SERVER['REQUEST_METHOD']);
-error_log("Session ID: " . session_id());
-error_log("Session data: " . json_encode($_SESSION));
-error_log("Cookies: " . json_encode($_COOKIE));
-
-require_once 'UserModel.php';
-
-$userModel = new UserModel();
 
 // Obtener datos
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
-if (!$data) {
+
+if (!$data || json_last_error() !== JSON_ERROR_NONE) {
     $data = $_POST;
 }
 
 $accion = $data['accion'] ?? '';
 
-error_log("Acción: $accion");
+// SISTEMA DE ALMACENAMIENTO EN ARCHIVO (simula base de datos)
+$archivoDB = 'usuarios_db.json';
 
+function cargarBaseDatos() {
+    global $archivoDB;
+    if (file_exists($archivoDB)) {
+        $contenido = file_get_contents($archivoDB);
+        return json_decode($contenido, true) ?: [];
+    }
+    // Si no existe, crear con algunos usuarios de ejemplo
+    $usuariosBase = [
+        'mexa27442@gmail.com' => [
+            'id' => '1',
+            'nombre' => 'Carlos',
+            'password' => password_hash('123123', PASSWORD_DEFAULT),
+            'fecha_registro' => date('Y-m-d H:i:s')
+        ],
+        'test@test.com' => [
+            'id' => '2', 
+            'nombre' => 'Usuario Test',
+            'password' => password_hash('123456', PASSWORD_DEFAULT),
+            'fecha_registro' => date('Y-m-d H:i:s')
+        ]
+    ];
+    guardarBaseDatos($usuariosBase);
+    return $usuariosBase;
+}
+
+function guardarBaseDatos($datos) {
+    global $archivoDB;
+    file_put_contents($archivoDB, json_encode($datos, JSON_PRETTY_PRINT));
+}
+
+function buscarUsuarioPorEmail($email) {
+    $bd = cargarBaseDatos();
+    return $bd[$email] ?? null;
+}
+
+function registrarUsuarioBD($nombre, $email, $password) {
+    $bd = cargarBaseDatos();
+    
+    if (isset($bd[$email])) {
+        return ['success' => false, 'message' => 'El correo electrónico ya está registrado'];
+    }
+    
+    $nuevoUsuario = [
+        'id' => (string)(count($bd) + 1),
+        'nombre' => $nombre,
+        'password' => password_hash($password, PASSWORD_DEFAULT),
+        'fecha_registro' => date('Y-m-d H:i:s')
+    ];
+    
+    $bd[$email] = $nuevoUsuario;
+    guardarBaseDatos($bd);
+    
+    return [
+        'success' => true, 
+        'message' => 'Usuario registrado exitosamente',
+        'user_id' => $nuevoUsuario['id']
+    ];
+}
+
+function verificarLogin($email, $password) {
+    $usuario = buscarUsuarioPorEmail($email);
+    
+    if ($usuario && password_verify($password, $usuario['password'])) {
+        return [
+            'success' => true,
+            'message' => 'Inicio de sesión exitoso',
+            'usuario' => [
+                'id' => $usuario['id'],
+                'nombre' => $usuario['nombre'],
+                'email' => $email
+            ]
+        ];
+    }
+    
+    return ['success' => false, 'message' => 'Correo o contraseña incorrectos'];
+}
+
+// MANEJAR ACCIONES
 switch ($accion) {
     case 'registro':
         $nombre = trim($data['nombre'] ?? '');
@@ -76,7 +132,7 @@ switch ($accion) {
             exit;
         }
 
-        $resultado = $userModel->registrarUsuario($nombre, $email, $password);
+        $resultado = registrarUsuarioBD($nombre, $email, $password);
         
         if ($resultado['success']) {
             // Guardar en sesión
@@ -84,13 +140,6 @@ switch ($accion) {
             $_SESSION['usuario_nombre'] = $nombre;
             $_SESSION['usuario_email'] = $email;
             $_SESSION['last_activity'] = time();
-            
-            // Forzar escritura inmediata
-            session_commit();
-            
-            error_log("Sesión guardada después de registro");
-            error_log("Session después: " . json_encode($_SESSION));
-            error_log("Session ID: " . session_id());
         }
 
         echo json_encode($resultado);
@@ -111,7 +160,7 @@ switch ($accion) {
             exit;
         }
 
-        $resultado = $userModel->iniciarSesion($email, $password);
+        $resultado = verificarLogin($email, $password);
         
         if ($resultado['success']) {
             // Guardar en sesión
@@ -119,13 +168,6 @@ switch ($accion) {
             $_SESSION['usuario_nombre'] = $resultado['usuario']['nombre'];
             $_SESSION['usuario_email'] = $resultado['usuario']['email'];
             $_SESSION['last_activity'] = time();
-            
-            // Forzar escritura inmediata
-            session_commit();
-            
-            error_log("Sesión guardada después de login");
-            error_log("Session después: " . json_encode($_SESSION));
-            error_log("Session ID: " . session_id());
         }
 
         echo json_encode($resultado);
@@ -134,58 +176,28 @@ switch ($accion) {
     case 'logout':
         // Destruir sesión completamente
         $_SESSION = array();
-        
-        if (ini_get("session.use_cookies")) {
-            $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000,
-                $params["path"], $params["domain"],
-                $params["secure"], $params["httponly"]
-            );
-        }
-        
         session_destroy();
-        error_log("Sesión cerrada");
         echo json_encode(['success' => true, 'message' => 'Sesión cerrada']);
         break;
 
     case 'verificar_sesion':
-        error_log("Verificando sesión");
-        error_log("Session ID: " . session_id());
-        error_log("Session data: " . json_encode($_SESSION));
-        error_log("COOKIE array: " . json_encode($_COOKIE));
-        
         // Verificar si hay sesión activa
         $logueado = isset($_SESSION['usuario_id']) && !empty($_SESSION['usuario_id']);
         
         if ($logueado) {
-            error_log("Usuario encontrado en sesión: " . $_SESSION['usuario_id']);
             echo json_encode([
                 'success' => true,
                 'logueado' => true,
                 'usuario' => [
                     'id' => $_SESSION['usuario_id'],
-                    'nombre' => $_SESSION['usuario_nombre'] ?? 'Usuario',
-                    'email' => $_SESSION['usuario_email'] ?? ''
-                ],
-                'debug' => [
-                    'session_id' => session_id(),
-                    'session_name' => session_name(),
-                    'has_cookie' => isset($_COOKIE[session_name()]),
-                    'session_data' => $_SESSION
+                    'nombre' => $_SESSION['usuario_nombre'],
+                    'email' => $_SESSION['usuario_email']
                 ]
             ]);
         } else {
-            error_log("No hay usuario en sesión");
             echo json_encode([
                 'success' => true, 
-                'logueado' => false,
-                'debug' => [
-                    'session_id' => session_id(),
-                    'session_name' => session_name(),
-                    'session_content' => $_SESSION,
-                    'has_cookie' => isset($_COOKIE[session_name()]),
-                    'cookie_value' => $_COOKIE[session_name()] ?? 'no-cookie'
-                ]
+                'logueado' => false
             ]);
         }
         break;
@@ -193,11 +205,8 @@ switch ($accion) {
     default:
         echo json_encode([
             'success' => false, 
-            'message' => 'Acción no válida',
-            'accion_recibida' => $accion
+            'message' => 'Acción no válida'
         ]);
         break;
 }
-
-error_log("=== FIN REQUEST ===");
 ?>
