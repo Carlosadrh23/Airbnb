@@ -1,10 +1,12 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cerrar sesión - HomeAway</title>
-    <!-- CAMBIA ESTA RUTA -->
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body class="pagina-logout">
@@ -17,27 +19,23 @@
                     <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
             </div>
-
             <p class="texto-logout">¿Desea cerrar la sesión de su cuenta?</p>
-
             <div class="botones-logout">
-                <button class="boton-confirmar" onclick="cerrarSesionDirecto()">Cerrar sesión</button>
-                <button class="boton-cancelar" onclick="cancelarDirecto()">Cancelar</button>
+                <button class="boton-confirmar" onclick="cerrarSesion()">Cerrar sesión</button>
+                <button class="boton-cancelar" onclick="window.location.href='index.php'">Cancelar</button>
             </div>
         </div>
     </div>
-
+    
     <script>
-        // Función para Cerrar Sesión
-        async function cerrarSesionDirecto() {
+        async function cerrarSesion() {
             try {
                 const response = await fetch('../app/AuthController.php', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({accion: 'logout'})
+                    body: JSON.stringify({ accion: 'logout' })
                 });
-                
                 const resultado = await response.json();
                 
                 if (resultado.success) {
@@ -46,17 +44,9 @@
                 } else {
                     alert('Error: ' + resultado.message);
                 }
-            } catch (error) {
-                alert('Error de conexión');
-            }
-        }
-        
-        // Función para Cancelar
-        function cancelarDirecto() {
-            if (document.referrer && document.referrer.includes(window.location.hostname)) {
-                window.history.back();
-            } else {
-                window.location.href = 'index.php';
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Error al cerrar sesión');
             }
         }
     </script>

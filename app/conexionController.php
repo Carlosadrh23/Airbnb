@@ -1,10 +1,9 @@
 <?php
 class conexionController {
-    // CONFIGURACIÓN CORREGIDA PARA INFINITY FREE
-    private $host = 'sql105.infinityfree.com'; // El hostname de tu panel
+    private $host = 'sql105.infinityfree.com';
     private $dbname = 'if0_40439028_airbnb';
     private $username = 'if0_40439028';
-    private $password = 'CjNuGYp519Ho';
+    private $password = 'CjNuGYpSi9Ho'; 
     private $conexion;
 
     public function __construct() {
@@ -17,11 +16,11 @@ class conexionController {
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
-                    PDO::ATTR_TIMEOUT => 5 // Timeout de 5 segundos
+                    PDO::ATTR_TIMEOUT => 10
                 ]
             );
         } catch (PDOException $e) {
-            error_log("Error de conexión BD Infinity Free: " . $e->getMessage());
+            error_log("Error de conexión BD: " . $e->getMessage());
             $this->conexion = null;
         }
     }
