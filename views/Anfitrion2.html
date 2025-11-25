@@ -4,43 +4,120 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homeaway - Confirma tu dirección</title>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 
-<body>
-    <div>
-        <div>HOMEAWAY</div>
+<body class="pagina-tipo-propiedad">
+    <div class="seccion-izquierda">
+        <div class="logo-container">
+            <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
+        </div>
     </div>
 
-    <div>
-        <button>←</button>
+    <div class="container container-direccion">
+        <button class="back-button" onclick="window.location.href='Anfitrion1.html'">←</button>
 
-        <h1>Confirma tu dirección</h1>
-        <p>Solo compartiremos la dirección con los huéspedes después de que hayan hecho la reservación.</p>
+        <h1 class="titulo-direccion">Confirma tu dirección</h1>
+        <p class="subtitle subtitle-direccion">Solo compartiremos la dirección con los huéspedes después de que hayan hecho la reservación.</p>
 
-        <form>
-            <label>Región</label><br>
-            <input type="text" placeholder="La paz - MX"><br><br>
+        <form class="form-direccion" id="formDireccion">
+            <div class="grupo-input">
+                <label class="label-input">Región *</label>
+                <input type="text" class="input-field" id="region" placeholder="La paz - MX" required>
+            </div>
 
-            <label>Dirección</label><br>
-            <input type="text" placeholder="sonora"><br><br>
+            <div class="grupo-input">
+                <label class="label-input">Dirección *</label>
+                <input type="text" class="input-field" id="direccion" placeholder="Sonora" required>
+            </div>
 
-            <label>Departamento, habitación, etc. (si corresponde)</label><br>
-            <input type="text" placeholder="Departamento, habitación, etc."><br><br>
+            <div class="grupo-input">
+                <label class="label-input">Departamento, habitación, etc. (si corresponde)</label>
+                <input type="text" class="input-field" id="departamento" placeholder="Departamento, habitación, etc.">
+            </div>
 
-            <label>Zona (si corresponde)</label><br>
-            <input type="text" placeholder="Zona"><br><br>
+            <div class="grupo-input">
+                <label class="label-input">Zona (si corresponde)</label>
+                <input type="text" class="input-field" id="zona" placeholder="Zona">
+            </div>
 
-            <label>Código postal</label><br>
-            <input type="text" placeholder="Código postal"><br><br>
+            <div class="grupo-input">
+                <label class="label-input">Código postal *</label>
+                <input type="text" class="input-field" id="codigoPostal" placeholder="Código postal" maxlength="5" required>
+            </div>
 
-            <label>Ciudad / municipio</label><br>
-            <input type="text" placeholder="La paz"><br><br>
+            <div class="grupo-input">
+                <label class="label-input">Ciudad / municipio *</label>
+                <input type="text" class="input-field" id="ciudad" placeholder="La paz" required>
+            </div>
 
-            <label>Estado</label><br>
-            <input type="text" placeholder="Baja California sur"><br><br>
+            <div class="grupo-input">
+                <label class="label-input">Estado *</label>
+                <input type="text" class="input-field" id="estado" placeholder="Baja California sur" required>
+            </div>
 
-            <button type="submit">Siguiente</button>
+            <button type="submit" class="boton-siguiente">Siguiente</button>
         </form>
     </div>
+
+    <script>
+        document.getElementById('formDireccion').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtener valores y limpiar espacios
+            const region = document.getElementById('region').value.trim();
+            const direccion = document.getElementById('direccion').value.trim();
+            const codigoPostal = document.getElementById('codigoPostal').value.trim();
+            const ciudad = document.getElementById('ciudad').value.trim();
+            const estado = document.getElementById('estado').value.trim();
+            
+            // Validar que los campos obligatorios no estén vacíos
+            if (!region) {
+                alert('Por favor ingresa la región');
+                document.getElementById('region').focus();
+                return;
+            }
+            
+            if (!direccion) {
+                alert('Por favor ingresa la dirección');
+                document.getElementById('direccion').focus();
+                return;
+            }
+            
+            if (!codigoPostal) {
+                alert('Por favor ingresa el código postal');
+                document.getElementById('codigoPostal').focus();
+                return;
+            }
+            
+            // Validar que el código postal sea numérico y tenga 5 dígitos
+            if (!/^\d{5}$/.test(codigoPostal)) {
+                alert('El código postal debe tener 5 dígitos');
+                document.getElementById('codigoPostal').focus();
+                return;
+            }
+            
+            if (!ciudad) {
+                alert('Por favor ingresa la ciudad o municipio');
+                document.getElementById('ciudad').focus();
+                return;
+            }
+            
+            if (!estado) {
+                alert('Por favor ingresa el estado');
+                document.getElementById('estado').focus();
+                return;
+            }
+            
+            // Si todas las validaciones pasan, redirigir
+            console.log('Formulario válido, redirigiendo...');
+            window.location.href = 'Anfitrion3.html';
+        });
+        
+        // Validar  números en el código postal
+        document.getElementById('codigoPostal').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
 </body>
 </html>

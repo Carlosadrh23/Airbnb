@@ -33,7 +33,14 @@ function inicializarRegistro() {
 
             if (resultado.success) {
                 alert('¡Registro exitoso! Bienvenido ' + nombre);
-                window.location.href = window.location.origin + '/views/index.php';
+                
+                const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                if (redirectUrl) {
+                    sessionStorage.removeItem('redirect_after_login');
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = window.location.origin + '/views/index.php';
+                }
             } else {
                 alert(resultado.message);
             }
@@ -73,7 +80,14 @@ function inicializarLogin() {
 
             if (resultado.success) {
                 alert('¡Bienvenido ' + resultado.usuario.nombre + '!');
-                window.location.href = window.location.origin + '/views/index.php';
+                
+                const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                if (redirectUrl) {
+                    sessionStorage.removeItem('redirect_after_login');
+                    window.location.href = redirectUrl;
+                } else {
+                    window.location.href = window.location.origin + '/views/index.php';
+                }
             } else {
                 alert(resultado.message);
             }
@@ -103,6 +117,7 @@ async function cerrarSesion() {
         const resultado = await response.json();
         
         if (resultado.success) {
+            sessionStorage.removeItem('redirect_after_login');
             alert('Sesión cerrada correctamente');
             window.location.href = window.location.origin + '/views/index.php';
         } else {
@@ -114,7 +129,6 @@ async function cerrarSesion() {
     }
 }
 
-// Hacer disponible globalmente para onclick
 window.cerrarSesion = cerrarSesion;
 
 // =======================================================================
@@ -179,12 +193,16 @@ async function verificarSesion() {
             if (nombreUsuarioMenu) nombreUsuarioMenu.textContent = resultado.usuario.nombre;
             if (emailUsuarioMenu) emailUsuarioMenu.textContent = resultado.usuario.email;
             
+            return true;
+            
         } else {
             console.log('Sin sesión activa');
             
             if (iconoUsuario) iconoUsuario.style.display = 'none';
             if (menuSinSesion) menuSinSesion.style.display = 'block';
             if (menuConSesion) menuConSesion.style.display = 'none';
+            
+            return false;
         }
     } catch (err) {
         console.error('Error verificando sesión:', err);
@@ -196,7 +214,63 @@ async function verificarSesion() {
         if (iconoUsuario) iconoUsuario.style.display = 'none';
         if (menuSinSesion) menuSinSesion.style.display = 'block';
         if (menuConSesion) menuConSesion.style.display = 'none';
+        
+        return false;
     }
+}
+
+// =======================================================================
+//              PROTEGER ENLACES DE ANFITRIÓN (CORREGIDO)
+// =======================================================================
+async function protegerEnlacesAnfitrion() {
+    const enlacesAnfitrion = document.querySelectorAll('a[href*="Anfitrion"], .menu-item[href*="Anfitrion"]');
+    
+    if (enlacesAnfitrion.length === 0) {
+        console.log('No hay enlaces de anfitrión en esta página');
+        return;
+    }
+    
+    console.log('Configurando protección para', enlacesAnfitrion.length, 'enlaces');
+    
+    enlacesAnfitrion.forEach(enlace => {
+        // Remover listeners previos clonando el elemento
+        const nuevoEnlace = enlace.cloneNode(true);
+        enlace.parentNode.replaceChild(nuevoEnlace, enlace);
+        
+        nuevoEnlace.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const urlDestino = this.getAttribute('href');
+            console.log('Click en:', urlDestino);
+            
+            try {
+                // Verificar sesión EN TIEMPO REAL
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ accion: 'verificar_sesion' })
+                });
+
+                const resultado = await response.json();
+                
+                if (resultado.logueado && resultado.usuario) {
+                    console.log(' Acceso permitido:', resultado.usuario.nombre);
+                    sessionStorage.removeItem('redirect_after_login');
+                    window.location.href = urlDestino;
+                } else {
+                    console.log(' Sin sesión - redirigiendo a login');
+                    sessionStorage.setItem('redirect_after_login', urlDestino);
+                    alert('Debes iniciar sesión para convertirte en anfitrión');
+                    window.location.href = 'Login.html';
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Error de conexión');
+            }
+        });
+    });
 }
 
 // =======================================================================
@@ -209,4 +283,5 @@ document.addEventListener('DOMContentLoaded', function() {
     inicializarLogin();
     inicializarMenu();
     verificarSesion();
+    protegerEnlacesAnfitrion();
 });

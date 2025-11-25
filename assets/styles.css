@@ -29,6 +29,84 @@ body.pagina-logout {
     overflow: hidden;
 }
 
+/* Clase para página de selección de tipo de propiedad */
+body.pagina-tipo-propiedad {
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #5B8A8F 0%, #6B9A9F 50%, #7BAAAF 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+}
+
+/* Fondos decorativos para página tipo propiedad */
+body.pagina-tipo-propiedad::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    animation: float 20s ease-in-out infinite;
+}
+
+body.pagina-tipo-propiedad::after {
+    content: '';
+    position: absolute;
+    bottom: -150px;
+    left: -150px;
+    width: 500px;
+    height: 500px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    animation: float 15s ease-in-out infinite reverse;
+}
+
+/* Seccion izquierda para página de tipo de propiedad */
+body.pagina-tipo-propiedad .seccion-izquierda {
+    position: absolute;
+    top: 40px;
+    left: 50px;
+    z-index: 10;
+    background: transparent;
+    padding: 0;
+    width: auto;
+    height: auto;
+    justify-content: flex-start;
+    flex: none;
+}
+
+body.pagina-tipo-propiedad .seccion-izquierda::after {
+    display: none;
+}
+
+body.pagina-tipo-propiedad .logo-container {
+    position: static;
+    margin: 0;
+}
+
+body.pagina-tipo-propiedad .logo-login {
+    width: 120px;
+    height: auto;
+    display: block;
+}
+
+/* Container principal de la página de tipo de propiedad */
+body.pagina-tipo-propiedad .container {
+    background: white;
+    border-radius: 16px;
+    padding: 60px 70px;
+    max-width: 650px;
+    width: 90%;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
 /* ===== ESTILO PARA PÁGINA PRINCIPAL ===== */
 .header {
     display: flex;
@@ -608,6 +686,94 @@ body.pagina-logout {
     transform: translateY(-2px);
 }
 
+/* ===== ESTILOS PARA SELECCIÓN DE TIPO DE PROPIEDAD ===== */
+
+/* Container principal de la página de tipo de propiedad */
+.container {
+    background: white;
+    border-radius: 16px;
+    padding: 60px 70px;
+    max-width: 650px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+body.pagina-tipo-propiedad .container {
+    width: 90%;
+    max-width: 650px;
+}
+
+.back-button {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    background: transparent;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    color: #222222;
+    transition: all 0.2s;
+}
+
+.back-button:hover {
+    background: #F7F7F7;
+}
+
+body.pagina-tipo-propiedad h1 {
+    font-size: 26px;
+    font-weight: 500;
+    color: #222222;
+    margin-bottom: 10px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+body.pagina-tipo-propiedad .subtitle {
+    font-size: 14px;
+    color: #717171;
+    text-align: center;
+    margin-bottom: 45px;
+    font-weight: 400;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.option-button {
+    width: 100%;
+    padding: 22px;
+    background: #F7F7F7;
+    border: 1px solid #E8E8E8;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 400;
+    color: #222222;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.option-button:hover {
+    background: #EBEBEB;
+    border-color: #DDDDDD;
+    transform: translateY(-1px);
+}
+
+.option-button:active {
+    transform: translateY(0);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 968px) {
     .contenedor-principal {
@@ -695,6 +861,30 @@ body.pagina-logout {
         padding: 14px;
         font-size: 15px;
     }
+
+    body.pagina-tipo-propiedad .container {
+        padding: 50px 40px;
+        width: 85%;
+    }
+
+    .back-button {
+        top: 20px;
+        left: 20px;
+    }
+
+    body.pagina-tipo-propiedad h1 {
+        font-size: 22px;
+    }
+
+    body.pagina-tipo-propiedad .subtitle {
+        font-size: 13px;
+        margin-bottom: 35px;
+    }
+
+    .option-button {
+        padding: 20px;
+        font-size: 16px;
+    }
 }
 
 @media (max-width: 568px) {
@@ -725,10 +915,312 @@ body.pagina-logout {
     .seccion-derecha::after {
         display: none;
     }
+
+    body.pagina-tipo-propiedad {
+        padding: 15px;
+    }
+
+    body.pagina-tipo-propiedad .seccion-izquierda {
+        top: 20px;
+        left: 20px;
+    }
+
+    body.pagina-tipo-propiedad .logo-login {
+        width: 80px;
+    }
+
+    body.pagina-tipo-propiedad .container {
+        padding: 30px 20px;
+        width: 100%;
+    }
+
+    body.pagina-tipo-propiedad h1 {
+        font-size: 20px;
+    }
+
+    .option-button {
+        padding: 18px;
+        font-size: 15px;
+    }
+
+    body.pagina-tipo-propiedad::before,
+    body.pagina-tipo-propiedad::after {
+        display: none;
+    }
 }
 
 @media (min-width: 1024px) {
     .propiedades {
         grid-template-columns: repeat(3, 1fr);
+    }
+}
+/* ===== ESTILOS PARA FORMULARIO DE DIRECCIÓN ===== */
+
+.form-direccion {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;  
+    margin-top: 20px;  
+}
+
+
+body.pagina-tipo-propiedad .container.container-direccion {
+    padding: 40px 50px; 
+    max-height: 90vh;  
+    overflow-y: auto;  /* Scroll  */
+}
+
+
+body.pagina-tipo-propiedad h1.titulo-direccion {
+    font-size: 22px;  
+    margin-bottom: 8px;  
+}
+
+body.pagina-tipo-propiedad .subtitle.subtitle-direccion {
+    font-size: 13px;  
+    margin-bottom: 25px; 
+}
+
+
+.form-direccion .grupo-input {
+    gap: 6px;  
+}
+
+.form-direccion .label-input {
+    font-size: 14px; 
+}
+
+.form-direccion .input-field {
+    padding: 12px 14px;  
+    font-size: 14px;  
+}
+
+.boton-siguiente {
+    margin-top: 12px;  
+    padding: 14px; 
+    background: #222222;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px; 
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+.boton-siguiente:hover {
+    background: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Ajustes  para formulario de dirección */
+@media (max-width: 968px) {
+    body.pagina-tipo-propiedad .container.container-direccion {
+        padding: 35px 35px;
+    }
+
+    .form-direccion {
+        gap: 14px;
+    }
+
+    body.pagina-tipo-propiedad h1.titulo-direccion {
+        font-size: 20px;
+    }
+
+    .boton-siguiente {
+        padding: 13px;
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 568px) {
+    body.pagina-tipo-propiedad .container.container-direccion {
+        padding: 25px 20px;
+    }
+
+    .form-direccion {
+        gap: 12px;
+        margin-top: 15px;
+    }
+
+    body.pagina-tipo-propiedad h1.titulo-direccion {
+        font-size: 18px;
+    }
+
+    body.pagina-tipo-propiedad .subtitle.subtitle-direccion {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+
+    .form-direccion .input-field {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .boton-siguiente {
+        padding: 12px;
+        font-size: 14px;
+    }
+}
+/* ===== ESTILOS PARA PÁGINA DE RESUMEN/ÉXITO ===== */
+
+.container-resumen {
+    text-align: center;
+    padding: 50px 60px;
+}
+
+.icono-exito {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    width: 60px;
+    height: 60px;
+}
+
+.icono-exito svg {
+    display: block;
+}
+
+.titulo-exito {
+    font-size: 32px;
+    font-weight: 600;
+    color: #222222;
+    margin-bottom: 12px;
+}
+
+.subtitle-exito {
+    font-size: 14px;
+    color: #717171;
+    margin-bottom: 35px;
+}
+
+.resumen-propiedad {
+    background: #F7F7F7;
+    border-radius: 12px;
+    padding: 25px 30px;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.titulo-resumen {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222222;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.detalle-resumen {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.detalle-resumen:last-child {
+    margin-bottom: 0;
+}
+
+.label-resumen {
+    font-size: 15px;
+    font-weight: 600;
+    color: #222222;
+    min-width: 80px;
+}
+
+.valor-resumen {
+    font-size: 15px;
+    font-weight: 400;
+    color: #717171;
+    flex: 1;
+}
+
+.boton-finalizar {
+    width: 100%;
+    padding: 18px;
+    background: #222222;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.boton-finalizar:hover {
+    background: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive para página de resumen */
+@media (max-width: 968px) {
+    .container-resumen {
+        padding: 40px 40px;
+    }
+
+    .titulo-exito {
+        font-size: 28px;
+    }
+
+    .resumen-propiedad {
+        padding: 20px 25px;
+    }
+
+    .boton-finalizar {
+        padding: 16px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 568px) {
+    .container-resumen {
+        padding: 30px 25px;
+    }
+
+    .icono-exito {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 20px;
+    }
+
+    .icono-exito svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .titulo-exito {
+        font-size: 24px;
+    }
+
+    .subtitle-exito {
+        font-size: 13px;
+        margin-bottom: 30px;
+    }
+
+    .resumen-propiedad {
+        padding: 18px 20px;
+    }
+
+    .titulo-resumen {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+
+    .label-resumen,
+    .valor-resumen {
+        font-size: 14px;
+    }
+
+    .label-resumen {
+        min-width: 70px;
+    }
+
+    .boton-finalizar {
+        padding: 14px;
+        font-size: 15px;
     }
 }

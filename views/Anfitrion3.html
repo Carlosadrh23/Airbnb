@@ -4,31 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homeaway - Perfecto</title>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
-<body>
-    <div>
-        <div>HOMEAWAY</div>
+<body class="pagina-tipo-propiedad">
+    <div class="seccion-izquierda">
+        <div class="logo-container">
+            <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
+        </div>
     </div>
 
-    <div>
-        <div>✓</div>
-
-        <h1>¡Perfecto!</h1>
-        <p>Has terminado para convertirte en anfitrión</p>
-
-        <div>
-            <h2>Resumen de tu propiedad</h2>
-            
-            <p>Tipo: casa</p>
-            
-            <p>Dirección:</p>
-            
-            <p>Ciudad:</p>
-            
-            <p>Estado:</p>
+    <div class="container container-resumen">
+        <div class="icono-exito">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m9 12 2 2 4-4"></path>
+            </svg>
         </div>
 
-        <button>Finalizar</button>
+        <h1 class="titulo-exito">¡Perfecto!</h1>
+        <p class="subtitle subtitle-exito">Has terminado para convertirte en anfitrión</p>
+
+        <div class="resumen-propiedad">
+            <h2 class="titulo-resumen">Resumen de tu propiedad</h2>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Tipo:</span>
+                <span class="valor-resumen">casa</span>
+            </div>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Dirección:</span>
+                <span class="valor-resumen" id="direccionResumen"></span>
+            </div>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Ciudad:</span>
+                <span class="valor-resumen" id="ciudadResumen"></span>
+            </div>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Estado:</span>
+                <span class="valor-resumen" id="estadoResumen"></span>
+            </div>
+        </div>
+
+        <button type="button" class="boton-finalizar" onclick="window.location.href='index.php'">Finalizar</button>
     </div>
 </body>
 </html>

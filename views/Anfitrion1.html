@@ -4,31 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homeaway - Tipo de Propiedad</title>
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 
-<body>
-    <div class="logo">
-        <div class="logo-icon"></div>
-        <span>HOMEAWAY</span>
+<body class="pagina-tipo-propiedad">
+    <div class="seccion-izquierda">
+        <div class="logo-container">
+            <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
+        </div>
     </div>
 
     <div class="container">
-        <button class="back-button">←</button>
+       <button class="back-button" onclick="window.location.replace('index.php')">←</button>
 
         <h1>¿Cuál de estas opciones describe mejor tu alojamiento?</h1>
         <p class="subtitle">Selecciona el tipo de propiedad que vas a ofrecer</p>
 
         <div class="options">
-            <button class="option-button">Casa</button>
-            <button class="option-button">Departamento</button>
-            <button class="option-button">Condominio</button>
+            <button class="option-button" onclick="window.location.href='Anfitrion2.html'">Casa</button>
+            <button class="option-button" onclick="window.location.href='Anfitrion2.html'">Departamento</button>
+            <button class="option-button" onclick="window.location.href='Anfitrion2.html'">Condominio</button>
         </div>
     </div>
-
-    <script>
-        function selectOption(type) {
-            alert('Has seleccionado: ' + type);
-        }
-    </script>
 </body>
 </html>
