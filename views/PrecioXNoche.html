@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homeaway - Configura tu anuncio</title>
+     <link rel="stylesheet" href="../assets/styles.css">
+</head>
+
+<body>
+    <div class="logo-container">
+        <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
+    </div>
+
+    <div class="container">
+        <button class="back-button" onclick="window.history.back()">←</button>
+
+        <h1 class="titulo-precio">Configura tu anuncio</h1>
+        <p class="subtitle">Establece el precio por noche y agrega una foto de tu propiedad.</p>
+
+        <form class="form-precio" id="formPrecio">
+            <div class="grupo-input">
+                <label class="label-input">Precio por noche *</label>
+                <div class="input-precio-container">
+                    <span class="simbolo-moneda">$</span>
+                    <input type="text" class="input-field input-precio" id="precioNoche" placeholder="0" required>
+                </div>
+            </div>
+
+            <div class="grupo-input">
+                <label class="label-input">Foto de tu propiedad</label>
+                
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon"></div>
+                    <div class="upload-text">Haz clic o arrastra una foto aquí</div>
+                    <div class="upload-subtext">JPG, PNG o WEBP (máx. 5MB)</div>
+                </div>
+
+                <div class="preview-container" id="previewContainer">
+                    <img id="previewImage" class="preview-image" alt="Preview">
+                    <button type="button" class="remove-image" id="removeImage">×</button>
+                </div>
+
+                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp">
+            </div>
+
+            <button type="submit" class="boton-siguiente" id="btnSubmit">Siguiente</button>
+        </form>
+    </div>
+
+    <script>
+        let imagenSeleccionada = false;
+
+        // Formatear números con comas
+        function formatearNumero(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        function limpiarNumero(str) {
+            return str.replace(/[^0-9]/g, '');
+        }
+
+        // Formatear input de precio
+        document.getElementById('precioNoche').addEventListener('input', function(e) {
+            let valor = limpiarNumero(this.value);
+            if (valor) {
+                this.value = formatearNumero(valor);
+            }
+        });
+
+        // Manejo de upload de imagen
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const removeImage = document.getElementById('removeImage');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                manejarArchivo(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                manejarArchivo(e.target.files[0]);
+            }
+        });
+
+        function manejarArchivo(file) {
+            // Validar tipo
+            if (!file.type.match('image/jpeg|image/png|image/webp')) {
+                alert('Por favor selecciona una imagen JPG, PNG o WEBP');
+                return;
+            }
+
+            // Validar tamaño (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('La imagen no debe superar los 5MB');
+                return;
+            }
+
+            // Mostrar preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                uploadArea.style.display = 'none';
+                previewContainer.style.display = 'block';
+                imagenSeleccionada = true;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        removeImage.addEventListener('click', () => {
+            previewContainer.style.display = 'none';
+            uploadArea.style.display = 'block';
+            fileInput.value = '';
+            imagenSeleccionada = false;
+        });
+
+        // Validación del formulario
+        document.getElementById('formPrecio').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const precioStr = limpiarNumero(document.getElementById('precioNoche').value);
+            const precio = parseInt(precioStr);
+            
+            if (!precio || precio <= 0) {
+                alert('Por favor ingresa un precio válido por noche');
+                document.getElementById('precioNoche').focus();
+                return;
+            }
+            
+            console.log('Formulario válido:', {
+                precio: precio,
+                tieneImagen: imagenSeleccionada
+            });
+            
+            alert('¡Datos guardados correctamente! Redirigiendo...');
+            window.location.href = 'Anfitrion3.html';
+        });
+    </script>
+</body>
+</html>
