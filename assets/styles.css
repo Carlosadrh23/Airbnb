@@ -1458,3 +1458,18 @@ body.pagina-tipo-propiedad .subtitle.subtitle-direccion {
                 padding: 30px 20px;
             }
         }
+.option-button {
+    transition: all 0.3s ease;
+}
+
+.option-button.seleccionado {
+    background-color: #5B9C9B;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(91, 156, 155, 0.3);
+}
+
+.option-button:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}

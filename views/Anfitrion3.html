@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homeaway - Perfecto</title>
+    <title>Homeaway - ¡Perfecto!</title>
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
+
 <body class="pagina-tipo-propiedad">
     <div class="seccion-izquierda">
         <div class="logo-container">
@@ -13,42 +14,86 @@
         </div>
     </div>
 
-    <div class="container container-resumen">
+    <div class="container container-resumen paso-4">
         <div class="icono-exito">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2.5">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="m9 12 2 2 4-4"></path>
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+                <circle cx="40" cy="40" r="38" stroke="#222222" stroke-width="4"/>
+                <path d="M25 40L35 50L55 30" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
 
         <h1 class="titulo-exito">¡Perfecto!</h1>
-        <p class="subtitle subtitle-exito">Has terminado para convertirte en anfitrión</p>
+        <p class="subtitle-exito">Has terminado para convertirte en anfitrión</p>
 
         <div class="resumen-propiedad">
-            <h2 class="titulo-resumen">Resumen de tu propiedad</h2>
+            <h3 class="titulo-resumen">Resumen de tu propiedad</h3>
             
             <div class="detalle-resumen">
                 <span class="label-resumen">Tipo:</span>
-                <span class="valor-resumen">casa</span>
+                <span class="valor-resumen" id="resumenTipo">-</span>
             </div>
             
             <div class="detalle-resumen">
                 <span class="label-resumen">Dirección:</span>
-                <span class="valor-resumen" id="direccionResumen"></span>
+                <span class="valor-resumen" id="resumenDireccion">-</span>
             </div>
             
             <div class="detalle-resumen">
                 <span class="label-resumen">Ciudad:</span>
-                <span class="valor-resumen" id="ciudadResumen"></span>
+                <span class="valor-resumen" id="resumenCiudad">-</span>
             </div>
             
             <div class="detalle-resumen">
                 <span class="label-resumen">Estado:</span>
-                <span class="valor-resumen" id="estadoResumen"></span>
+                <span class="valor-resumen" id="resumenEstado">-</span>
             </div>
         </div>
 
-        <button type="button" class="boton-finalizar" onclick="window.location.href='index.php'">Finalizar</button>
+        <button class="boton-finalizar" onclick="finalizarRegistro()">Finalizar</button>
     </div>
+
+    <script src="../assets/javascript/main.js"></script>
+    <script>
+        // Cargar datos guardados al cargar la página
+        window.addEventListener('DOMContentLoaded', function() {
+            // Obtener datos de sessionStorage
+            const propiedadData = sessionStorage.getItem('propiedadRegistrada');
+            
+            if (propiedadData) {
+                try {
+                    const datos = JSON.parse(propiedadData);
+                    
+                    // Mostrar los datos en el resumen
+                    document.getElementById('resumenTipo').textContent = datos.tipo || 'Casa';
+                    document.getElementById('resumenDireccion').textContent = datos.direccion || '-';
+                    document.getElementById('resumenCiudad').textContent = datos.ciudad || '-';
+                    document.getElementById('resumenEstado').textContent = datos.estado || '-';
+                    
+                    console.log('Datos cargados:', datos);
+                } catch (error) {
+                    console.error('Error al cargar datos:', error);
+                }
+            } else {
+                // Intentar obtener de sessionStorage si no hay datos guardados
+                const tipo = sessionStorage.getItem('tipoAlojamiento') || 'Casa';
+                const direccion = sessionStorage.getItem('direccion') || '-';
+                const ciudad = sessionStorage.getItem('ciudad') || '-';
+                const estado = sessionStorage.getItem('estado') || '-';
+                
+                document.getElementById('resumenTipo').textContent = tipo;
+                document.getElementById('resumenDireccion').textContent = direccion;
+                document.getElementById('resumenCiudad').textContent = ciudad;
+                document.getElementById('resumenEstado').textContent = estado;
+            }
+        });
+        
+        function finalizarRegistro() {
+            // Limpiar sessionStorage
+            sessionStorage.clear();
+            
+            // Redirigir a la página principal
+            window.location.href = 'index.php';
+        }
+    </script>
 </body>
 </html>

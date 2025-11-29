@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homeaway - Configura tu anuncio</title>
-     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="../assets/styles.css">
 </head>
 
-<body>
-    <div class="logo-container">
-        <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
+<body class="pagina-tipo-propiedad">
+    <div class="seccion-izquierda">
+        <div class="logo-container">
+            <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
+        </div>
     </div>
 
-    <div class="container">
+    <div class="container paso-3">
         <button class="back-button" onclick="window.history.back()">←</button>
 
         <h1 class="titulo-precio">Configura tu anuncio</h1>
@@ -23,7 +25,7 @@
                 <label class="label-input">Precio por noche *</label>
                 <div class="input-precio-container">
                     <span class="simbolo-moneda">$</span>
-                    <input type="text" class="input-field input-precio" id="precioNoche" placeholder="0" required>
+                    <input type="text" class="input-field input-precio" name="precioNoche" id="precioNoche" placeholder="0" required>
                 </div>
             </div>
 
@@ -31,9 +33,7 @@
                 <label class="label-input">Foto de tu propiedad</label>
                 
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon"></div>
                     <div class="upload-text">Haz clic o arrastra una foto aquí</div>
-                    <div class="upload-subtext">JPG, PNG o WEBP (máx. 5MB)</div>
                 </div>
 
                 <div class="preview-container" id="previewContainer">
@@ -41,13 +41,14 @@
                     <button type="button" class="remove-image" id="removeImage">×</button>
                 </div>
 
-                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp">
+                <input type="file" name="imagen" id="fileInput" accept="image/jpeg,image/png,image/webp">
             </div>
 
             <button type="submit" class="boton-siguiente" id="btnSubmit">Siguiente</button>
         </form>
     </div>
 
+    <script src="../assets/javascript/main.js"></script>
     <script>
         let imagenSeleccionada = false;
 
@@ -79,7 +80,6 @@
             fileInput.click();
         });
 
-        // Drag and drop
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('drag-over');
@@ -136,8 +136,8 @@
             imagenSeleccionada = false;
         });
 
-        // Validación del formulario
-        document.getElementById('formPrecio').addEventListener('submit', function(e) {
+        // Validación y envío del formulario
+        document.getElementById('formPrecio').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const precioStr = limpiarNumero(document.getElementById('precioNoche').value);
@@ -149,13 +149,66 @@
                 return;
             }
             
-            console.log('Formulario válido:', {
+            console.log('Preparando datos para enviar:', {
                 precio: precio,
                 tieneImagen: imagenSeleccionada
             });
             
-            alert('¡Datos guardados correctamente! Redirigiendo...');
-            window.location.href = 'Anfitrion3.html';
+            // Deshabilitar botón mientras se envía
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Guardando...';
+            
+            // Recopilar todos los datos del proceso
+            const formData = new FormData();
+            
+            // Datos del paso 1 (tipo de alojamiento)
+            const tipoAlojamiento = sessionStorage.getItem('tipoAlojamiento') || 'casa';
+            formData.append('tipoAlojamiento', tipoAlojamiento);
+            
+            // Datos del paso 2 (dirección)
+            formData.append('region', sessionStorage.getItem('region') || '');
+            formData.append('direccion', sessionStorage.getItem('direccion') || '');
+            formData.append('departamento', sessionStorage.getItem('departamento') || '');
+            formData.append('zona', sessionStorage.getItem('zona') || '');
+            formData.append('codigoPostal', sessionStorage.getItem('codigoPostal') || '');
+            formData.append('ciudad', sessionStorage.getItem('ciudad') || '');
+            formData.append('estado', sessionStorage.getItem('estado') || '');
+            
+            // Datos del paso 3 (precio y foto)
+            formData.append('precioNoche', precio);
+            
+            if (fileInput.files && fileInput.files[0]) {
+                formData.append('imagen', fileInput.files[0]);
+            }
+            
+            try {
+                const response = await fetch('../app/AnfitrionController.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                const resultado = await response.json();
+                console.log('Respuesta del servidor:', resultado);
+                
+                if (resultado.success) {
+                    // Guardar datos para mostrar en la confirmación
+                    sessionStorage.setItem('propiedadRegistrada', JSON.stringify(resultado.datos));
+                    
+                    // Redirigir a página de confirmación
+                    window.location.href = 'Anfitrion3.html';
+                } else {
+                    alert('Error: ' + resultado.message);
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = 'Siguiente';
+                }
+            } catch (error) {
+                console.error('Error al enviar datos:', error);
+                alert('Hubo un error al procesar tu solicitud. Por favor intenta de nuevo.');
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Siguiente';
+            }
         });
     </script>
 </body>
