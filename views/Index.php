@@ -15,7 +15,6 @@ session_start();
     <img src="../assets/img/Logo_azul.png" alt="Logo" class="logo">
     
     <div class="menu-container">
-        <!-- Ícono de usuario (oculto por defecto, JavaScript lo muestra si hay sesión) -->
         <div class="icono-usuario" id="iconoUsuario" style="display: none;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -23,7 +22,6 @@ session_start();
             </svg>
         </div>
         
-        <!-- Menú hamburguesa -->
         <div class="menu-hamburguesa">
             <button class="boton-menu">
                 <span class="linea"></span>
@@ -31,13 +29,11 @@ session_start();
                 <span class="linea"></span>
             </button>
             
-            <!-- Menú sin sesión  -->
             <div class="dropdown-menu" id="menuSinSesion">
                 <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
-                <a href="Anfitrion1.html" class="menu-item">Conviertete en anfitrión</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviértete en anfitrión</a>
             </div>
             
-            <!-- Menú con sesión  -->
             <div class="dropdown-menu" id="menuConSesion" style="display: none;">
                 <div class="user-info-menu">
                     <strong id="nombreUsuarioMenu">Usuario</strong>
@@ -45,7 +41,7 @@ session_start();
                 </div>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
                 <a href="Perfil.html" class="menu-item">Mi perfil</a>
-                <a href="Anfitrion1.html" class="menu-item">Conviertete en anfitrión</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviértete en anfitrión</a>
                 <a href="CerrarSesion.php" class="menu-item">Cerrar sesión</a>
             </div>
         </div>
@@ -76,9 +72,9 @@ session_start();
         </button>
     </div>
 
-   <div class="propiedades">
+   <div class="propiedades" id="contenedorPropiedades">
     
-    <!-- Condominio CDMX -->
+    <!-- Propiedades estáticas originales -->
     <div class="condominio">
         <a href="CondominioCDMX.html">
             <div class="contenedor-img">
@@ -87,7 +83,7 @@ session_start();
         </a>
         <div class="info-condominio">
             <h3 class="titulo-condominio">Condominio en Ciudad de México</h3>
-            <p class="precio">$2500 MXN <span class="noches">por 2 noches</span></p>
+            <p class="precio">$2,500 MXN <span class="noches">por 2 noches</span></p>
             <div class="rating">
                 <span class="estrella">★</span>
                 <span class="valor-rating">4.9</span>
@@ -95,7 +91,6 @@ session_start();
         </div>
     </div>
 
-    <!-- Departamento Guadalajara -->
     <div class="depa-gdl">
         <a href="CondominioGDL.html">
             <div class="contenedor-img">
@@ -104,7 +99,7 @@ session_start();
         </a>
         <div class="info-depa-gdl">
             <h3 class="titulo-depa-gdl">Departamento en Guadalajara</h3>
-            <p class="precio">$2900 MXN <span class="noches">por 2 noches</span></p>
+            <p class="precio">$2,900 MXN <span class="noches">por 2 noches</span></p>
             <div class="rating">
                 <span class="estrella">★</span>
                 <span class="valor-rating">4.89</span>
@@ -112,7 +107,6 @@ session_start();
         </div>
     </div>
 
-    <!-- Departamento La Paz -->
     <div class="depa-lapaz">
         <a href="CondominioLPZ.html">
             <div class="contenedor-img">
@@ -121,7 +115,7 @@ session_start();
         </a>
         <div class="info-depa-lapaz">
             <h3 class="titulo-depa-lapaz">Departamento en La Paz BCS</h3>
-            <p class="precio">$3400 MXN <span class="noches">por 1 noches</span></p>
+            <p class="precio">$3,400 MXN <span class="noches">por 1 noche</span></p>
             <div class="rating">
                 <span class="estrella">★</span>
                 <span class="valor-rating">3.65</span>
@@ -129,7 +123,6 @@ session_start();
         </div>
     </div>
 
-    <!-- Departamento Cabos -->
     <div class="depa-cabos">
         <a href="CondominioLosCabos.html">
             <div class="contenedor-img">
@@ -137,8 +130,8 @@ session_start();
             </div>
         </a>
         <div class="info-depa-cabos">
-            <h3 class="titulo-depa-cabos">Departamento en cabos san lucas</h3>
-            <p class="precio">$2500 MXN <span class="noches">por 2 noches</span></p>
+            <h3 class="titulo-depa-cabos">Departamento en Cabos San Lucas</h3>
+            <p class="precio">$2,500 MXN <span class="noches">por 2 noches</span></p>
             <div class="rating">
                 <span class="estrella">★</span>
                 <span class="valor-rating">4.89</span>
@@ -146,9 +139,10 @@ session_start();
         </div>
     </div>
 
+    <!-- Las propiedades dinámicas se cargarán aquí automáticamente -->
 </div>
 
-    
     <script src="../assets/javascript/main.js"></script>
+    <script src="../assets/javascript/RegistroAnfitrion.js"></script>
 </body>
 </html>

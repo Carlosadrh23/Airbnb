@@ -6,7 +6,6 @@
     <title>Homeaway - ¡Perfecto!</title>
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
-
 <body class="pagina-tipo-propiedad">
     <div class="seccion-izquierda">
         <div class="logo-container">
@@ -53,47 +52,6 @@
     </div>
 
     <script src="../assets/javascript/main.js"></script>
-    <script>
-        // Cargar datos guardados al cargar la página
-        window.addEventListener('DOMContentLoaded', function() {
-            // Obtener datos de sessionStorage
-            const propiedadData = sessionStorage.getItem('propiedadRegistrada');
-            
-            if (propiedadData) {
-                try {
-                    const datos = JSON.parse(propiedadData);
-                    
-                    // Mostrar los datos en el resumen
-                    document.getElementById('resumenTipo').textContent = datos.tipo || 'Casa';
-                    document.getElementById('resumenDireccion').textContent = datos.direccion || '-';
-                    document.getElementById('resumenCiudad').textContent = datos.ciudad || '-';
-                    document.getElementById('resumenEstado').textContent = datos.estado || '-';
-                    
-                    console.log('Datos cargados:', datos);
-                } catch (error) {
-                    console.error('Error al cargar datos:', error);
-                }
-            } else {
-                // Intentar obtener de sessionStorage si no hay datos guardados
-                const tipo = sessionStorage.getItem('tipoAlojamiento') || 'Casa';
-                const direccion = sessionStorage.getItem('direccion') || '-';
-                const ciudad = sessionStorage.getItem('ciudad') || '-';
-                const estado = sessionStorage.getItem('estado') || '-';
-                
-                document.getElementById('resumenTipo').textContent = tipo;
-                document.getElementById('resumenDireccion').textContent = direccion;
-                document.getElementById('resumenCiudad').textContent = ciudad;
-                document.getElementById('resumenEstado').textContent = estado;
-            }
-        });
-        
-        function finalizarRegistro() {
-            // Limpiar sessionStorage
-            sessionStorage.clear();
-            
-            // Redirigir a la página principal
-            window.location.href = 'index.php';
-        }
-    </script>
+    <script src="../assets/javascript/RegistroAnfitrion.js"></script>
 </body>
 </html>

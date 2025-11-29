@@ -6,7 +6,6 @@
     <title>Homeaway - Confirma tu dirección</title>
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
-
 <body class="pagina-tipo-propiedad">
     <div class="seccion-izquierda">
         <div class="logo-container">
@@ -62,64 +61,5 @@
 
     <script src="../assets/javascript/main.js"></script>
     <script src="../assets/javascript/RegistroAnfitrion.js"></script>
-    <script>
-        document.getElementById('formDireccion').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Obtener valores y limpiar espacios
-            const region = document.getElementById('region').value.trim();
-            const direccion = document.getElementById('direccion').value.trim();
-            const codigoPostal = document.getElementById('codigoPostal').value.trim();
-            const ciudad = document.getElementById('ciudad').value.trim();
-            const estado = document.getElementById('estado').value.trim();
-            
-            // Validar que los campos obligatorios no estén vacíos
-            if (!region) {
-                alert('Por favor ingresa la región');
-                document.getElementById('region').focus();
-                return;
-            }
-            
-            if (!direccion) {
-                alert('Por favor ingresa la dirección');
-                document.getElementById('direccion').focus();
-                return;
-            }
-            
-            if (!codigoPostal) {
-                alert('Por favor ingresa el código postal');
-                document.getElementById('codigoPostal').focus();
-                return;
-            }
-            
-            // Validar que el código postal sea numérico y tenga 5 dígitos
-            if (!/^\d{5}$/.test(codigoPostal)) {
-                alert('El código postal debe tener 5 dígitos');
-                document.getElementById('codigoPostal').focus();
-                return;
-            }
-            
-            if (!ciudad) {
-                alert('Por favor ingresa la ciudad o municipio');
-                document.getElementById('ciudad').focus();
-                return;
-            }
-            
-            if (!estado) {
-                alert('Por favor ingresa el estado');
-                document.getElementById('estado').focus();
-                return;
-            }
-            
-            // Redirigir si todas las validaciones pasan
-            console.log('Formulario válido, redirigiendo...');
-            window.location.href = 'PrecioXNoche.html';
-        });
-        
-        // Validar números en el código postal
-        document.getElementById('codigoPostal').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-    </script>
 </body>
 </html>

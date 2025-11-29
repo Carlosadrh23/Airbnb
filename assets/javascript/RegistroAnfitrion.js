@@ -1,370 +1,440 @@
+// RegistroAnfitrion.js - Sistema completo de registro de anfitrión
+
 const API_ANFITRION = '../app/AnfitrionController.php';
 
-//Variables globales para almacenar los datos del formulario
-let datosAnfitrion = {
-    tipoAlojamiento: '',
-    region: '',
-    direccion: '',
-    departamento: '',
-    zona: '',
-    codigoPostal: '',
-    ciudad: '',
-    estado: '',
-    precioNoche: 0,
-    imagen: null
+// =======================================================================
+//              ALMACENAMIENTO DE DATOS
+// =======================================================================
+const DatosAnfitrion = {
+    guardar: (campo, valor) => {
+        sessionStorage.setItem(campo, valor);
+        console.log(` Guardado: ${campo} = ${valor}`);
+    },
+    
+    obtener: (campo) => {
+        return sessionStorage.getItem(campo) || '';
+    },
+    
+    limpiar: () => {
+        const keysToRemove = [
+            'tipoAlojamiento', 'region', 'direccion', 'departamento',
+            'zona', 'codigoPostal', 'ciudad', 'estado', 'precioNoche'
+        ];
+        keysToRemove.forEach(key => sessionStorage.removeItem(key));
+        console.log(' Datos limpiados');
+    }
 };
 
-let pasoActual = 1;
-const totalPasos = 4;
-
-//NAVEGACIÓN ENTRE PASOS
-
-function siguientePaso() {
-    if (validarPasoActual()) {
-        guardarDatosPaso();
-        
-        if (pasoActual < totalPasos) {
-            pasoActual++;
-            mostrarPaso(pasoActual);
-        } else {
-            // Último paso - enviar todos los datos
-            enviarDatosAnfitrion();
-        }
-    }
-}
-
-function pasoAnterior() {
-    if (pasoActual > 1) {
-        pasoActual--;
-        mostrarPaso(pasoActual);
-    }
-}
-
-function mostrarPaso(paso) {
-    console.log('Mostrando paso:', paso);
+// =======================================================================
+//              PASO 1: TIPO DE ALOJAMIENTO (Anfitrion1.html)
+// =======================================================================
+function inicializarPaso1() {
+    const botones = document.querySelectorAll('.option-button');
     
-    // Ocultar todos los pasos
-    const pasos = document.querySelectorAll('[class*="paso-"]');
-    pasos.forEach(p => {
-        if (p.classList.contains(`paso-${paso}`)) {
-            p.style.display = 'block';
-        } else {
-            p.style.display = 'none';
-        }
+    if (botones.length === 0) return;
+    
+    console.log(' Inicializando Paso 1 - Tipo de Alojamiento');
+    
+    botones.forEach(boton => {
+        boton.addEventListener('click', function() {
+            // Remover selección previa
+            botones.forEach(b => b.classList.remove('seleccionado'));
+            
+            // Marcar como seleccionado
+            this.classList.add('seleccionado');
+            
+            // Obtener el tipo
+            const tipo = this.getAttribute('data-tipo') || this.textContent.trim().toLowerCase();
+            
+            // Guardar
+            DatosAnfitrion.guardar('tipoAlojamiento', tipo);
+            
+            console.log(` Tipo seleccionado: ${tipo}`);
+            
+            // Redirigir después de animación
+            setTimeout(() => {
+                window.location.href = 'Anfitrion2.html';
+            }, 300);
+        });
     });
 }
 
-//GUARDAR DATOS POR PASO
-
-function guardarDatosPaso() {
-    console.log('Guardando datos del paso:', pasoActual);
+// =======================================================================
+//              PASO 2: DIRECCIÓN (Anfitrion2.html)
+// =======================================================================
+function inicializarPaso2() {
+    const form = document.getElementById('formDireccion');
     
-    switch(pasoActual) {
-        case 1: // Tipo de alojamiento
-            guardarTipoAlojamiento();
-            break;
-            
-        case 2: // Dirección
-            guardarDireccion();
-            break;
-            
-        case 3: // Precio y foto
-            guardarPrecioYFoto();
-            break;
-    }
+    if (!form) return;
     
-    console.log('Datos actuales:', datosAnfitrion);
-}
-
-function guardarTipoAlojamiento() {
-    // Buscar la opción seleccionada
-    const opciones = document.querySelectorAll('.opcion-alojamiento, [data-tipo], button[onclick*="seleccionar"]');
+    console.log(' Inicializando Paso 2 - Dirección');
     
-    opciones.forEach(opcion => {
-        if (opcion.classList.contains('seleccionado') || 
-            opcion.classList.contains('activo') ||
-            opcion.classList.contains('active')) {
-            
-            // Intentar obtener el tipo de diferentes formas
-            datosAnfitrion.tipoAlojamiento = 
-                opcion.dataset.tipo || 
-                opcion.getAttribute('data-tipo') ||
-                opcion.textContent.trim().toLowerCase();
-        }
-    });
-    
-    // Buscar texto visible en los botones
-    if (!datosAnfitrion.tipoAlojamiento) {
-        const textoBotones = ['casa', 'departamento', 'condominio'];
-        opciones.forEach(opcion => {
-            const texto = opcion.textContent.toLowerCase();
-            textoBotones.forEach(tipo => {
-                if (texto.includes(tipo)) {
-                    datosAnfitrion.tipoAlojamiento = tipo;
-                }
-            });
+    // Validar solo números en código postal
+    const codigoPostalInput = document.getElementById('codigoPostal');
+    if (codigoPostalInput) {
+        codigoPostalInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
         });
     }
-}
-
-function guardarDireccion() {
-    // Buscar todos los inputs del paso 2
-    const inputs = document.querySelectorAll('input[type="text"]');
     
-    inputs.forEach(input => {
-        const placeholder = input.placeholder.toLowerCase();
-        const value = input.value.trim();
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Identificar cada campo por su placeholder o name
-        if (placeholder.includes('la paz') || placeholder.includes('región') || input.name === 'region') {
-            datosAnfitrion.region = value;
+        // Obtener valores
+        const region = document.getElementById('region').value.trim();
+        const direccion = document.getElementById('direccion').value.trim();
+        const departamento = document.getElementById('departamento').value.trim();
+        const zona = document.getElementById('zona').value.trim();
+        const codigoPostal = document.getElementById('codigoPostal').value.trim();
+        const ciudad = document.getElementById('ciudad').value.trim();
+        const estado = document.getElementById('estado').value.trim();
+        
+        // Validaciones
+        if (!region) {
+            alert('Por favor ingresa la región');
+            document.getElementById('region').focus();
+            return;
         }
-        else if (placeholder.includes('sonora') || placeholder.includes('dirección') || input.name === 'direccion') {
-            datosAnfitrion.direccion = value;
+        
+        if (!direccion) {
+            alert('Por favor ingresa la dirección');
+            document.getElementById('direccion').focus();
+            return;
         }
-        else if (placeholder.includes('departamento') || placeholder.includes('habitación') || input.name === 'departamento') {
-            datosAnfitrion.departamento = value;
+        
+        if (!codigoPostal) {
+            alert('Por favor ingresa el código postal');
+            document.getElementById('codigoPostal').focus();
+            return;
         }
-        else if (placeholder.includes('zona') || input.name === 'zona') {
-            datosAnfitrion.zona = value;
+        
+        if (!/^\d{5}$/.test(codigoPostal)) {
+            alert('El código postal debe tener 5 dígitos');
+            document.getElementById('codigoPostal').focus();
+            return;
         }
-        else if (placeholder.includes('código') || placeholder.includes('postal') || input.name === 'codigoPostal') {
-            datosAnfitrion.codigoPostal = value;
+        
+        if (!ciudad) {
+            alert('Por favor ingresa la ciudad o municipio');
+            document.getElementById('ciudad').focus();
+            return;
         }
-        else if (placeholder.includes('ciudad') || placeholder.includes('municipio') || input.name === 'ciudad') {
-            datosAnfitrion.ciudad = value;
+        
+        if (!estado) {
+            alert('Por favor ingresa el estado');
+            document.getElementById('estado').focus();
+            return;
         }
-        else if (placeholder.includes('baja california') || placeholder.includes('estado') || input.name === 'estado') {
-            datosAnfitrion.estado = value;
-        }
+        
+        // Guardar todos los datos
+        DatosAnfitrion.guardar('region', region);
+        DatosAnfitrion.guardar('direccion', direccion);
+        DatosAnfitrion.guardar('departamento', departamento);
+        DatosAnfitrion.guardar('zona', zona);
+        DatosAnfitrion.guardar('codigoPostal', codigoPostal);
+        DatosAnfitrion.guardar('ciudad', ciudad);
+        DatosAnfitrion.guardar('estado', estado);
+        
+        console.log(' Dirección guardada');
+        
+        // Redirigir al siguiente paso
+        window.location.href = 'PrecioXNoche.html';
     });
 }
 
-function guardarPrecioYFoto() {
-    // Buscar el input del precio
-    const precioInput = document.querySelector('input[type="number"]') || 
-                       document.querySelector('input[placeholder*="precio"]') ||
-                       document.querySelector('input[name="precio"]');
+// =======================================================================
+//              PASO 3: PRECIO E IMAGEN (PrecioXNoche.html)
+// =======================================================================
+function inicializarPaso3() {
+    const form = document.getElementById('formPrecio');
     
+    if (!form) return;
+    
+    console.log(' Inicializando Paso 3 - Precio e Imagen');
+    
+    let imagenSeleccionada = false;
+    
+    // Formatear precio
+    const precioInput = document.getElementById('precioNoche');
     if (precioInput) {
-        datosAnfitrion.precioNoche = parseFloat(precioInput.value) || 0;
+        precioInput.addEventListener('input', function() {
+            let valor = this.value.replace(/[^0-9]/g, '');
+            if (valor) {
+                this.value = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+        });
     }
     
-    // Buscar el input de la imagen
-    const imagenInput = document.querySelector('input[type="file"]');
+    // Manejo de imagen
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImage = document.getElementById('previewImage');
+    const removeImage = document.getElementById('removeImage');
     
-    if (imagenInput && imagenInput.files && imagenInput.files[0]) {
-        datosAnfitrion.imagen = imagenInput.files[0];
-    }
-}
-
-//VALIDACIÓN DE PASOS
-
-function validarPasoActual() {
-    switch(pasoActual) {
-        case 1:
-            return validarTipoAlojamiento();
-        case 2:
-            return validarDireccion();
-        case 3:
-            return validarPrecioYFoto();
-        case 4:
-            return true; // Paso de confirmación, siempre válido
-        default:
-            return true;
-    }
-}
-
-function validarTipoAlojamiento() {
-    const tieneSeleccion = document.querySelector('.seleccionado, .activo, .active');
-    
-    if (!tieneSeleccion) {
-        alert('Por favor selecciona un tipo de alojamiento');
-        return false;
-    }
-    
-    return true;
-}
-
-function validarDireccion() {
-    const inputs = document.querySelectorAll('input[type="text"]');
-    let direccionValida = false;
-    let codigoPostalValido = false;
-    let ciudadValida = false;
-    
-    inputs.forEach(input => {
-        const placeholder = input.placeholder.toLowerCase();
-        const value = input.value.trim();
+    function manejarArchivo(file) {
+        if (!file.type.match('image/jpeg|image/png|image/webp')) {
+            alert('Por favor selecciona una imagen JPG, PNG o WEBP');
+            return;
+        }
         
-        if ((placeholder.includes('sonora') || placeholder.includes('dirección')) && value) {
-            direccionValida = true;
+        if (file.size > 5 * 1024 * 1024) {
+            alert('La imagen no debe superar los 5MB');
+            return;
         }
-        if ((placeholder.includes('código') || placeholder.includes('postal')) && value) {
-            codigoPostalValido = true;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImage.src = e.target.result;
+            uploadArea.style.display = 'none';
+            previewContainer.style.display = 'block';
+            imagenSeleccionada = true;
+            console.log(' Imagen cargada');
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    if (uploadArea) {
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) {
+                manejarArchivo(e.dataTransfer.files[0]);
+            }
+        });
+    }
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                manejarArchivo(e.target.files[0]);
+            }
+        });
+    }
+    
+    if (removeImage) {
+        removeImage.addEventListener('click', () => {
+            previewContainer.style.display = 'none';
+            uploadArea.style.display = 'block';
+            fileInput.value = '';
+            imagenSeleccionada = false;
+            console.log(' Imagen removida');
+        });
+    }
+    
+    // Submit del formulario
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const precioStr = precioInput.value.replace(/[^0-9]/g, '');
+        const precio = parseFloat(precioStr);
+        
+        if (!precio || precio <= 0) {
+            alert('Por favor ingresa un precio válido por noche');
+            precioInput.focus();
+            return;
         }
-        if ((placeholder.includes('ciudad') || placeholder.includes('municipio') || placeholder.includes('la paz')) && value) {
-            ciudadValida = true;
+        
+        console.log(' Enviando datos al servidor...');
+        
+        const btnSubmit = document.getElementById('btnSubmit');
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = 'Guardando...';
+        
+        // Crear FormData
+        const formData = new FormData();
+        formData.append('tipoAlojamiento', DatosAnfitrion.obtener('tipoAlojamiento'));
+        formData.append('region', DatosAnfitrion.obtener('region'));
+        formData.append('direccion', DatosAnfitrion.obtener('direccion'));
+        formData.append('departamento', DatosAnfitrion.obtener('departamento'));
+        formData.append('zona', DatosAnfitrion.obtener('zona'));
+        formData.append('codigoPostal', DatosAnfitrion.obtener('codigoPostal'));
+        formData.append('ciudad', DatosAnfitrion.obtener('ciudad'));
+        formData.append('estado', DatosAnfitrion.obtener('estado'));
+        formData.append('precioNoche', precio);
+        
+        if (fileInput.files && fileInput.files[0]) {
+            formData.append('imagen', fileInput.files[0]);
+        }
+        
+        try {
+            const response = await fetch(API_ANFITRION, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData
+            });
+            
+            const resultado = await response.json();
+            console.log(' Respuesta del servidor:', resultado);
+            
+            if (resultado.success) {
+                // Guardar datos para mostrar en confirmación
+                sessionStorage.setItem('propiedadRegistrada', JSON.stringify(resultado.datos));
+                
+                console.log(' Propiedad registrada exitosamente');
+                
+                // Redirigir a página de confirmación
+                window.location.href = 'Anfitrion3.html';
+            } else {
+                alert('Error: ' + resultado.message);
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Siguiente';
+            }
+        } catch (error) {
+            console.error(' Error:', error);
+            alert('Hubo un error al procesar tu solicitud. Por favor intenta de nuevo.');
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = 'Siguiente';
         }
     });
-    
-    if (!direccionValida || !codigoPostalValido || !ciudadValida) {
-        alert('Por favor completa los campos obligatorios: Dirección, Código Postal y Ciudad');
-        return false;
-    }
-    
-    return true;
 }
 
-function validarPrecioYFoto() {
-    const precioInput = document.querySelector('input[type="number"]');
+// =======================================================================
+//              PASO 4: CONFIRMACIÓN (Anfitrion3.html)
+// =======================================================================
+function inicializarPaso4() {
+    const resumenTipo = document.getElementById('resumenTipo');
+    const resumenDireccion = document.getElementById('resumenDireccion');
+    const resumenCiudad = document.getElementById('resumenCiudad');
+    const resumenEstado = document.getElementById('resumenEstado');
     
-    if (!precioInput || !precioInput.value || parseFloat(precioInput.value) <= 0) {
-        alert('Por favor ingresa un precio válido por noche');
-        return false;
+    if (!resumenTipo) return;
+    
+    console.log(' Inicializando Paso 4 - Confirmación');
+    
+    // Obtener datos guardados
+    const datosGuardados = sessionStorage.getItem('propiedadRegistrada');
+    
+    if (datosGuardados) {
+        try {
+            const datos = JSON.parse(datosGuardados);
+            
+            if (resumenTipo) resumenTipo.textContent = datos.tipo || '-';
+            if (resumenDireccion) resumenDireccion.textContent = datos.direccion || '-';
+            if (resumenCiudad) resumenCiudad.textContent = datos.ciudad || '-';
+            if (resumenEstado) resumenEstado.textContent = datos.estado || '-';
+            
+            console.log('✓ Datos mostrados en resumen');
+        } catch (error) {
+            console.error('Error al cargar datos:', error);
+        }
+    } else {
+        // Cargar desde sessionStorage individual
+        if (resumenTipo) resumenTipo.textContent = DatosAnfitrion.obtener('tipoAlojamiento') || '-';
+        if (resumenDireccion) resumenDireccion.textContent = DatosAnfitrion.obtener('direccion') || '-';
+        if (resumenCiudad) resumenCiudad.textContent = DatosAnfitrion.obtener('ciudad') || '-';
+        if (resumenEstado) resumenEstado.textContent = DatosAnfitrion.obtener('estado') || '-';
     }
-    
-    return true;
 }
 
-//ENVIAR DATOS AL SERVIDOR
+// Función global para finalizar (llamada desde HTML)
+window.finalizarRegistro = function() {
+    console.log(' Finalizando registro');
+    
+    // Limpiar todo
+    DatosAnfitrion.limpiar();
+    sessionStorage.removeItem('propiedadRegistrada');
+    
+    // Redirigir a index
+    window.location.href = 'index.php';
+};
 
-async function enviarDatosAnfitrion() {
-    console.log('Enviando datos del anfitrión:', datosAnfitrion);
+// =======================================================================
+//              CARGAR PROPIEDADES EN INDEX
+// =======================================================================
+async function cargarPropiedadesDinamicas() {
+    const contenedor = document.querySelector('.propiedades');
     
-    const formData = new FormData();
+    if (!contenedor) return;
     
-    // Agregar todos los datos
-    formData.append('tipoAlojamiento', datosAnfitrion.tipoAlojamiento);
-    formData.append('region', datosAnfitrion.region);
-    formData.append('direccion', datosAnfitrion.direccion);
-    formData.append('departamento', datosAnfitrion.departamento);
-    formData.append('zona', datosAnfitrion.zona);
-    formData.append('codigoPostal', datosAnfitrion.codigoPostal);
-    formData.append('ciudad', datosAnfitrion.ciudad);
-    formData.append('estado', datosAnfitrion.estado);
-    formData.append('precioNoche', datosAnfitrion.precioNoche);
-    
-    if (datosAnfitrion.imagen) {
-        formData.append('imagen', datosAnfitrion.imagen);
-    }
+    console.log(' Cargando propiedades dinámicas...');
     
     try {
         const response = await fetch(API_ANFITRION, {
-            method: 'POST',
-            credentials: 'include',
-            body: formData
+            method: 'GET',
+            credentials: 'include'
         });
         
         const resultado = await response.json();
-        console.log('Respuesta del servidor:', resultado);
         
-        if (resultado.success) {
-            alert('¡Felicidades! Tu propiedad ha sido registrada exitosamente.');
-            // Mostrar el paso de confirmación final o redirigir
-            mostrarConfirmacionFinal(resultado);
+        if (resultado.success && resultado.propiedades && resultado.propiedades.length > 0) {
+            console.log(` ${resultado.propiedades.length} propiedades encontradas`);
+            
+            resultado.propiedades.forEach(propiedad => {
+                const card = crearTarjetaPropiedad(propiedad);
+                contenedor.appendChild(card);
+            });
         } else {
-            alert('Error: ' + resultado.message);
+            console.log('ℹ No hay propiedades nuevas para mostrar');
         }
     } catch (error) {
-        console.error('Error al enviar datos:', error);
-        alert('Hubo un error al procesar tu solicitud. Por favor intenta de nuevo.');
+        console.error(' Error al cargar propiedades:', error);
     }
 }
 
-function mostrarConfirmacionFinal(resultado) {
-    // Mostrar el último paso con los datos confirmados
-    if (pasoActual < totalPasos) {
-        pasoActual = totalPasos;
-        mostrarPaso(pasoActual);
-    }
+function crearTarjetaPropiedad(propiedad) {
+    const div = document.createElement('div');
+    div.className = 'condominio';
     
-    // Llenar el resumen si existe
-    const resumenTipo = document.querySelector('[data-resumen="tipo"]');
-    const resumenDireccion = document.querySelector('[data-resumen="direccion"]');
-    const resumenCiudad = document.querySelector('[data-resumen="ciudad"]');
-    const resumenEstado = document.querySelector('[data-resumen="estado"]');
+    const imagenUrl = propiedad.imagen_url 
+        ? `../assets/img/propiedades/${propiedad.imagen_url}` 
+        : '../assets/img/placeholder.png';
     
-    if (resumenTipo) resumenTipo.textContent = datosAnfitrion.tipoAlojamiento;
-    if (resumenDireccion) resumenDireccion.textContent = datosAnfitrion.direccion;
-    if (resumenCiudad) resumenCiudad.textContent = datosAnfitrion.ciudad;
-    if (resumenEstado) resumenEstado.textContent = datosAnfitrion.estado;
+    const precioFormateado = parseFloat(propiedad.precio_noche).toLocaleString('es-MX');
     
-    // Buscar los elementos por texto visible
-    setTimeout(() => {
-        const elementos = document.querySelectorAll('p, span, div');
-        elementos.forEach(el => {
-            const texto = el.textContent;
-            if (texto.includes('Tipo:')) {
-                el.innerHTML = `Tipo: <strong>${datosAnfitrion.tipoAlojamiento}</strong>`;
-            }
-            if (texto.includes('Dirección:')) {
-                el.innerHTML = `Dirección: <strong>${datosAnfitrion.direccion}</strong>`;
-            }
-            if (texto.includes('Ciudad:')) {
-                el.innerHTML = `Ciudad: <strong>${datosAnfitrion.ciudad}</strong>`;
-            }
-            if (texto.includes('Estado:')) {
-                el.innerHTML = `Estado: <strong>${datosAnfitrion.estado}</strong>`;
-            }
-        });
-    }, 100);
+    div.innerHTML = `
+        <a href="DetallePropiedad.html?id=${propiedad.id}">
+            <div class="contenedor-img">
+                <img src="${imagenUrl}" alt="${propiedad.tipo_alojamiento} en ${propiedad.ciudad}" class="img-condominio" style="width: 300px;">
+            </div>
+        </a>
+        <div class="info-condominio">
+            <h3 class="titulo-condominio">${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h3>
+            <p class="precio">$${precioFormateado} MXN <span class="noches">por noche</span></p>
+            <div class="rating">
+                <span class="estrella">★</span>
+                <span class="valor-rating">5.0</span>
+            </div>
+        </div>
+    `;
+    
+    return div;
 }
 
-//MANEJO DE CLICKS EN OPCIONES
-
-function configurarSeleccionOpciones() {
-    // Configurar las opciones de tipo de alojamiento
-    const opciones = document.querySelectorAll('.opcion-alojamiento, [data-tipo], button[onclick*="tipo"]');
-    
-    opciones.forEach(opcion => {
-        opcion.addEventListener('click', function() {
-            // Remover selección de todas las opciones
-            opciones.forEach(o => {
-                o.classList.remove('seleccionado', 'activo', 'active');
-            });
-            
-            // Marcar esta opción como seleccionada
-            this.classList.add('seleccionado');
-            
-            console.log('Tipo seleccionado:', this.textContent.trim());
-        });
-    });
-}
-
-//INICIALIZACIÓN
-
+// =======================================================================
+//              INICIALIZACIÓN AUTOMÁTICA
+// =======================================================================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Sistema de registro de anfitrión inicializado');
+    const path = window.location.pathname;
     
-    // Configurar selección de opciones
-    configurarSeleccionOpciones();
+    console.log(' Sistema de Anfitrión Inicializado');
+    console.log(' Página actual:', path);
     
-    // Configurar botones de navegación
-    const botonesSiguiente = document.querySelectorAll('button[onclick*="siguiente"], .btn-siguiente, button:contains("Siguiente")');
-    botonesSiguiente.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            siguientePaso();
-        });
-    });
-    
-    const botonesAtras = document.querySelectorAll('button[onclick*="atras"], .btn-atras, .btn-anterior');
-    botonesAtras.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            pasoAnterior();
-        });
-    });
-    
-    const botonFinalizar = document.querySelector('button[onclick*="finalizar"], .btn-finalizar');
-    if (botonFinalizar) {
-        botonFinalizar.addEventListener('click', function(e) {
-            e.preventDefault();
-            // Redirigir al dashboard o página principal
-            window.location.href = 'index.php';
-        });
+    // Detectar página actual e inicializar
+    if (path.includes('Anfitrion1.html')) {
+        inicializarPaso1();
+    } 
+    else if (path.includes('Anfitrion2.html')) {
+        inicializarPaso2();
+    } 
+    else if (path.includes('PrecioXNoche.html')) {
+        inicializarPaso3();
+    } 
+    else if (path.includes('Anfitrion3.html')) {
+        inicializarPaso4();
     }
-    
-    // Mostrar el primer paso
-    mostrarPaso(1);
+    else if (path.includes('index.php') || path.endsWith('/views/')) {
+        cargarPropiedadesDinamicas();
+    }
 });

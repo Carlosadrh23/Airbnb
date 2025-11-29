@@ -12,41 +12,21 @@
             <img src="../assets/img/Logo_blanco.png" alt="HomeAway Logo" class="logo-login">
         </div>
     </div>
+
     <div class="container paso-1">
-       <button class="back-button" onclick="window.location.replace('index.php')">←</button>
+        <button class="back-button" onclick="window.location.href='index.php'">←</button>
+
         <h1>¿Cuál de estas opciones describe mejor tu alojamiento?</h1>
         <p class="subtitle">Selecciona el tipo de propiedad que vas a ofrecer</p>
+
         <div class="options">
             <button class="option-button" data-tipo="casa">Casa</button>
             <button class="option-button" data-tipo="departamento">Departamento</button>
             <button class="option-button" data-tipo="condominio">Condominio</button>
         </div>
-        <button class="btn-siguiente" style="display: none;">Siguiente</button>
     </div>
-    
+
     <script src="../assets/javascript/main.js"></script>
     <script src="../assets/javascript/RegistroAnfitrion.js"></script>
-    <script>
-        document.querySelectorAll('.option-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remover clase seleccionada de todos
-                document.querySelectorAll('.option-button').forEach(btn => {
-                    btn.classList.remove('seleccionado');
-                });
-                
-                // Agregar clase seleccionada
-                this.classList.add('seleccionado');
-                
-                // Guardar el tipo seleccionado
-                const tipoSeleccionado = this.getAttribute('data-tipo');
-                console.log('Tipo seleccionado:', tipoSeleccionado);
-                
-                // Ir al siguiente paso
-                setTimeout(() => {
-                    window.location.href = 'Anfitrion2.html';
-                }, 300);
-            });
-        });
-    </script>
 </body>
 </html>
