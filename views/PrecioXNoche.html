@@ -21,7 +21,7 @@
 
         <form class="form-precio" id="formPrecio">
             <div class="grupo-input">
-                <label class="label-input">Precio por noche *</label>
+                <label class="label-input">Precio por noche </label>
                 <div class="input-precio-container">
                     <span class="simbolo-moneda">$</span>
                     <input type="text" class="input-field input-precio" name="precioNoche" id="precioNoche" placeholder="0" required>
@@ -29,12 +29,22 @@
             </div>
 
             <div class="grupo-input">
+                <label class="label-input">Numero de noches </label>
+                <input type="number" class="input-field" name="numeroNoches" id="numeroNoches" placeholder="1" min="1" required>
+            </div>
+
+            <div class="grupo-input">
+                <label class="label-input">Descripcion de tu propiedad </label>
+                <textarea class="input-field" name="descripcion" id="descripcion" placeholder="Describe tu propiedad." rows="4" required></textarea>
+            </div>
+
+            <div class="grupo-input">
                 <label class="label-input">Foto de tu propiedad</label>
                 
                 <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Haz clic o arrastra una foto aquí</div>
-                    <div class="upload-subtext">JPG, PNG o WEBP (máx. 5MB)</div>
+                    <div class="upload-icon"></div>
+                    <div class="upload-text">Haz clic o arrastra una foto aqui</div>
+                    <div class="upload-subtext">JPG, PNG o WEBP (max. 5MB)</div>
                 </div>
 
                 <div class="preview-container" id="previewContainer" style="display: none;">

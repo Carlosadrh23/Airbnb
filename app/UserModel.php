@@ -95,5 +95,27 @@ class UserModel {
             return false;
         }
     }
+
+    public function obtenerUsuarioPorId($usuarioId) {
+        if (!$this->conexion) {
+            return null;
+        }
+
+        try {
+            $stmt = $this->conexion->prepare(
+                "SELECT id, nombre, email, fecha_registro, es_anfitrion 
+                 FROM usuarios 
+                 WHERE id = ?"
+            );
+            $stmt->execute([$usuarioId]);
+            $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $usuario ? $usuario : null;
+            
+        } catch (PDOException $e) {
+            error_log("Error en obtenerUsuarioPorId: " . $e->getMessage());
+            return null;
+        }
+    }
 }
 ?>

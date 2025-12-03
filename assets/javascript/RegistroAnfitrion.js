@@ -1,5 +1,4 @@
 // RegistroAnfitrion.js - Sistema completo de registro de anfitrión
-
 const API_ANFITRION = '../app/AnfitrionController.php';
 
 // =======================================================================
@@ -8,7 +7,7 @@ const API_ANFITRION = '../app/AnfitrionController.php';
 const DatosAnfitrion = {
     guardar: (campo, valor) => {
         sessionStorage.setItem(campo, valor);
-        console.log(` Guardado: ${campo} = ${valor}`);
+        console.log('Guardado: ' + campo + ' = ' + valor);
     },
     
     obtener: (campo) => {
@@ -18,10 +17,10 @@ const DatosAnfitrion = {
     limpiar: () => {
         const keysToRemove = [
             'tipoAlojamiento', 'region', 'direccion', 'departamento',
-            'zona', 'codigoPostal', 'ciudad', 'estado', 'precioNoche'
+            'zona', 'codigoPostal', 'ciudad', 'estado', 'precioNoche', 'numeroNoches'
         ];
         keysToRemove.forEach(key => sessionStorage.removeItem(key));
-        console.log(' Datos limpiados');
+        console.log('Datos limpiados');
     }
 };
 
@@ -33,7 +32,7 @@ function inicializarPaso1() {
     
     if (botones.length === 0) return;
     
-    console.log(' Inicializando Paso 1 - Tipo de Alojamiento');
+    console.log('Inicializando Paso 1 - Tipo de Alojamiento');
     
     botones.forEach(boton => {
         boton.addEventListener('click', function() {
@@ -49,7 +48,7 @@ function inicializarPaso1() {
             // Guardar
             DatosAnfitrion.guardar('tipoAlojamiento', tipo);
             
-            console.log(` Tipo seleccionado: ${tipo}`);
+            console.log('Tipo seleccionado: ' + tipo);
             
             // Redirigir después de animación
             setTimeout(() => {
@@ -67,7 +66,7 @@ function inicializarPaso2() {
     
     if (!form) return;
     
-    console.log(' Inicializando Paso 2 - Dirección');
+    console.log('Inicializando Paso 2 - Dirección');
     
     // Validar solo números en código postal
     const codigoPostalInput = document.getElementById('codigoPostal');
@@ -135,7 +134,7 @@ function inicializarPaso2() {
         DatosAnfitrion.guardar('ciudad', ciudad);
         DatosAnfitrion.guardar('estado', estado);
         
-        console.log(' Dirección guardada');
+        console.log('Dirección guardada');
         
         // Redirigir al siguiente paso
         window.location.href = 'PrecioXNoche.html';
@@ -150,7 +149,7 @@ function inicializarPaso3() {
     
     if (!form) return;
     
-    console.log(' Inicializando Paso 3 - Precio e Imagen');
+    console.log('Inicializando Paso 3 - Precio e Imagen');
     
     let imagenSeleccionada = false;
     
@@ -161,6 +160,17 @@ function inicializarPaso3() {
             let valor = this.value.replace(/[^0-9]/g, '');
             if (valor) {
                 this.value = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+        });
+    }
+    
+    // Validar número de noches
+    const nochesInput = document.getElementById('numeroNoches');
+    if (nochesInput) {
+        nochesInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value && parseInt(this.value) < 1) {
+                this.value = '1';
             }
         });
     }
@@ -189,7 +199,7 @@ function inicializarPaso3() {
             uploadArea.style.display = 'none';
             previewContainer.style.display = 'block';
             imagenSeleccionada = true;
-            console.log(' Imagen cargada');
+            console.log('Imagen cargada');
         };
         reader.readAsDataURL(file);
     }
@@ -229,7 +239,7 @@ function inicializarPaso3() {
             uploadArea.style.display = 'block';
             fileInput.value = '';
             imagenSeleccionada = false;
-            console.log(' Imagen removida');
+            console.log('Imagen removida');
         });
     }
     
@@ -246,7 +256,24 @@ function inicializarPaso3() {
             return;
         }
         
-        console.log(' Enviando datos al servidor...');
+        // Validar número de noches
+        const numeroNoches = parseInt(nochesInput.value);
+        if (!numeroNoches || numeroNoches < 1) {
+            alert('Por favor ingresa un número válido de noches (mínimo 1)');
+            nochesInput.focus();
+            return;
+        }
+        
+        // Validar descripción
+        const descripcionInput = document.getElementById('descripcion');
+        const descripcion = descripcionInput.value.trim();
+        if (!descripcion || descripcion.length < 20) {
+            alert('Por favor ingresa una descripción de al menos 20 caracteres');
+            descripcionInput.focus();
+            return;
+        }
+        
+        console.log('Enviando datos al servidor...');
         
         const btnSubmit = document.getElementById('btnSubmit');
         btnSubmit.disabled = true;
@@ -263,6 +290,8 @@ function inicializarPaso3() {
         formData.append('ciudad', DatosAnfitrion.obtener('ciudad'));
         formData.append('estado', DatosAnfitrion.obtener('estado'));
         formData.append('precioNoche', precio);
+        formData.append('numeroNoches', numeroNoches);
+        formData.append('descripcion', descripcion);
         
         if (fileInput.files && fileInput.files[0]) {
             formData.append('imagen', fileInput.files[0]);
@@ -276,13 +305,13 @@ function inicializarPaso3() {
             });
             
             const resultado = await response.json();
-            console.log(' Respuesta del servidor:', resultado);
+            console.log('Respuesta del servidor:', resultado);
             
             if (resultado.success) {
                 // Guardar datos para mostrar en confirmación
                 sessionStorage.setItem('propiedadRegistrada', JSON.stringify(resultado.datos));
                 
-                console.log(' Propiedad registrada exitosamente');
+                console.log('Propiedad registrada exitosamente');
                 
                 // Redirigir a página de confirmación
                 window.location.href = 'Anfitrion3.html';
@@ -292,7 +321,7 @@ function inicializarPaso3() {
                 btnSubmit.textContent = 'Siguiente';
             }
         } catch (error) {
-            console.error(' Error:', error);
+            console.error('Error:', error);
             alert('Hubo un error al procesar tu solicitud. Por favor intenta de nuevo.');
             btnSubmit.disabled = false;
             btnSubmit.textContent = 'Siguiente';
@@ -311,7 +340,7 @@ function inicializarPaso4() {
     
     if (!resumenTipo) return;
     
-    console.log(' Inicializando Paso 4 - Confirmación');
+    console.log('Inicializando Paso 4 - Confirmación');
     
     // Obtener datos guardados
     const datosGuardados = sessionStorage.getItem('propiedadRegistrada');
@@ -325,7 +354,7 @@ function inicializarPaso4() {
             if (resumenCiudad) resumenCiudad.textContent = datos.ciudad || '-';
             if (resumenEstado) resumenEstado.textContent = datos.estado || '-';
             
-            console.log('✓ Datos mostrados en resumen');
+            console.log('Datos mostrados en resumen');
         } catch (error) {
             console.error('Error al cargar datos:', error);
         }
@@ -340,7 +369,7 @@ function inicializarPaso4() {
 
 // Función global para finalizar (llamada desde HTML)
 window.finalizarRegistro = function() {
-    console.log(' Finalizando registro');
+    console.log('Finalizando registro');
     
     // Limpiar todo
     DatosAnfitrion.limpiar();
@@ -358,7 +387,7 @@ async function cargarPropiedadesDinamicas() {
     
     if (!contenedor) return;
     
-    console.log(' Cargando propiedades dinámicas...');
+    console.log('Cargando propiedades dinámicas...');
     
     try {
         const response = await fetch(API_ANFITRION, {
@@ -369,17 +398,17 @@ async function cargarPropiedadesDinamicas() {
         const resultado = await response.json();
         
         if (resultado.success && resultado.propiedades && resultado.propiedades.length > 0) {
-            console.log(` ${resultado.propiedades.length} propiedades encontradas`);
+            console.log(resultado.propiedades.length + ' propiedades encontradas');
             
             resultado.propiedades.forEach(propiedad => {
                 const card = crearTarjetaPropiedad(propiedad);
                 contenedor.appendChild(card);
             });
         } else {
-            console.log('ℹ No hay propiedades nuevas para mostrar');
+            console.log('No hay propiedades nuevas para mostrar');
         }
     } catch (error) {
-        console.error(' Error al cargar propiedades:', error);
+        console.error('Error al cargar propiedades:', error);
     }
 }
 
@@ -394,7 +423,7 @@ function crearTarjetaPropiedad(propiedad) {
     const precioFormateado = parseFloat(propiedad.precio_noche).toLocaleString('es-MX');
     
     div.innerHTML = `
-        <a href="DetallePropiedad.html?id=${propiedad.id}">
+        <a href="DetallePropiedad.php?id=${propiedad.id}">
             <div class="contenedor-img">
                 <img src="${imagenUrl}" alt="${propiedad.tipo_alojamiento} en ${propiedad.ciudad}" class="img-condominio" style="width: 300px;">
             </div>
@@ -418,8 +447,8 @@ function crearTarjetaPropiedad(propiedad) {
 document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname;
     
-    console.log(' Sistema de Anfitrión Inicializado');
-    console.log(' Página actual:', path);
+    console.log('Sistema de Anfitrión Inicializado');
+    console.log('Página actual:', path);
     
     // Detectar página actual e inicializar
     if (path.includes('Anfitrion1.html')) {

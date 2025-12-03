@@ -113,6 +113,45 @@ switch ($accion) {
         }
         break;
 
+    case 'obtener_perfil':
+        // Verificar que haya sesión
+        if (!isset($_SESSION['user_id'])) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'No hay sesión activa'
+            ]);
+            exit;
+        }
+        
+        try {
+            $usuarioId = $_SESSION['user_id'];
+            $usuario = $userModel->obtenerUsuarioPorId($usuarioId);
+            
+            if ($usuario) {
+                echo json_encode([
+                    'success' => true,
+                    'usuario' => [
+                        'id' => $usuario['id'],
+                        'nombre' => $usuario['nombre'],
+                        'email' => $usuario['email'],
+                        'fecha_registro' => date('d/m/Y', strtotime($usuario['fecha_registro']))
+                    ]
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Usuario no encontrado'
+                ]);
+            }
+        } catch (Exception $e) {
+            error_log("Error al obtener perfil: " . $e->getMessage());
+            echo json_encode([
+                'success' => false,
+                'message' => 'Error al obtener datos del perfil'
+            ]);
+        }
+        break;
+
     case 'test_db':
         // Endpoint para probar conexión
         $conectado = $userModel->verificarConexionBD();

@@ -46,7 +46,6 @@ try {
             $propiedadId = intval($_GET['id']);
             
             try {
-                // ⭐ AQUÍ ESTÁ EL CAMBIO: Agregué p.descripcion
                 $sql = "SELECT 
                             p.id,
                             p.anfitrion_id,
@@ -262,6 +261,9 @@ try {
                 if(!move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaCompleta)) {
                     responderJSON(['success' => false, 'message' => 'Error al guardar la imagen']);
                 }
+                
+                // ⭐ NUEVO: Dar permisos de lectura a la imagen para que todos puedan verla
+                chmod($rutaCompleta, 0644);
             }
             
             // Escapar datos para SQL
