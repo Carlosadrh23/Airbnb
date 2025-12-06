@@ -11,8 +11,9 @@
         <!-- Sidebar -->
         <aside class="perfil-sidebar">
             <div class="perfil-logo">
-                 <a href="index.php"></a>
-                <img src="../assets/img/Logo_azul.png" alt="HomeAway">
+                 <a href="index.php">
+                    <img src="../assets/img/Logo_azul.png" alt="HomeAway">
+                 </a>
             </div>
             
             <nav>
@@ -72,6 +73,32 @@
                         Mis Propiedades
                     </div>
                 </div>
+                
+                <!-- NUEVA ESTADÍSTICA: Reservaciones -->
+                <div class="perfil-stat-card">
+                    <div class="perfil-stat-numero" id="statReservaciones">0</div>
+                    <div class="perfil-stat-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        Mis Reservaciones
+                    </div>
+                </div>
+                
+                <!-- NUEVA ESTADÍSTICA: Gasto Total -->
+                <div class="perfil-stat-card">
+                    <div class="perfil-stat-numero" id="statGastoTotal">$0</div>
+                    <div class="perfil-stat-label">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Gasto Total
+                    </div>
+                </div>
             </div>
 
             <!-- Información del perfil -->
@@ -101,6 +128,31 @@
                 </div>
             </div>
 
+            <!-- NUEVA SECCIÓN: Mis Reservaciones -->
+            <div class="perfil-seccion">
+                <h2 class="perfil-seccion-titulo">Mis Reservaciones</h2>
+                
+                <table class="perfil-tabla">
+                    <thead>
+                        <tr>
+                            <th>Propiedad</th>
+                            <th>Fechas</th>
+                            <th>Huéspedes</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReservaciones">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #717171;">
+                                No tienes reservaciones
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <!-- Mis propiedades -->
             <div class="perfil-seccion">
                 <h2 class="perfil-seccion-titulo">Mis Propiedades</h2>
@@ -128,6 +180,8 @@
 
     <script src="../assets/javascript/main.js"></script>
     <script>
+        let usuarioIdGlobal = null;
+
         // Cargar datos del perfil
         async function cargarDatosPerfil() {
             try {
@@ -159,12 +213,15 @@
                 console.log('Datos perfil:', resultado);
 
                 if (resultado.success && resultado.usuario) {
+                    usuarioIdGlobal = resultado.usuario.id;
+                    
                     document.getElementById('perfilNombre').textContent = resultado.usuario.nombre;
                     document.getElementById('perfilEmail').textContent = resultado.usuario.email;
                     document.getElementById('perfilFecha').textContent = resultado.usuario.fecha_registro;
                     
-                    // Cargar propiedades del usuario
+                    // Cargar propiedades y reservaciones
                     await cargarPropiedadesUsuario(resultado.usuario.id);
+                    await cargarReservacionesUsuario();
                 } else {
                     console.error('Error:', resultado.message);
                     alert('Error al cargar datos del perfil');
@@ -202,7 +259,7 @@
                             tr.innerHTML = `
                                 <td>${prop.tipo_alojamiento}</td>
                                 <td>${prop.ciudad}, ${prop.estado}</td>
-                                <td>${parseFloat(prop.precio_noche).toLocaleString('es-MX')}</td>
+                                <td>$${parseFloat(prop.precio_noche).toLocaleString('es-MX')} MXN</td>
                                 <td><span class="perfil-badge">Activo</span></td>
                             `;
                             tbody.appendChild(tr);
@@ -216,7 +273,105 @@
             }
         }
 
+        // NUEVA FUNCIÓN: Cargar reservaciones del usuario
+        async function cargarReservacionesUsuario() {
+            try {
+                const response = await fetch('../app/ReservacionController.php', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                const resultado = await response.json();
+                console.log('Reservaciones:', resultado);
+
+                if (resultado.success && resultado.reservaciones) {
+                    const reservaciones = resultado.reservaciones;
+                    
+                    // Actualizar estadísticas
+                    document.getElementById('statReservaciones').textContent = reservaciones.length;
+                    
+                    // Calcular gasto total
+                    const gastoTotal = reservaciones.reduce((sum, r) => sum + parseFloat(r.precio_total), 0);
+                    document.getElementById('statGastoTotal').textContent = '$' + gastoTotal.toLocaleString('es-MX');
+                    
+                    if (reservaciones.length > 0) {
+                        const tbody = document.getElementById('tablaReservaciones');
+                        tbody.innerHTML = '';
+                        
+                        reservaciones.forEach(res => {
+                            const fechaInicio = new Date(res.fecha_inicio).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
+                            const fechaFin = new Date(res.fecha_fin).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+                            
+                            // Determinar color del badge según estado
+                            let badgeClass = 'perfil-badge';
+                            let estadoTexto = res.estado_reservacion;
+                            
+                            if (res.estado_reservacion === 'confirmada') {
+                                badgeClass += ' badge-confirmada';
+                                estadoTexto = 'Confirmada';
+                            } else if (res.estado_reservacion === 'completada') {
+                                badgeClass += ' badge-completada';
+                                estadoTexto = 'Completada';
+                            } else if (res.estado_reservacion === 'cancelada') {
+                                badgeClass += ' badge-cancelada';
+                                estadoTexto = 'Cancelada';
+                            } else {
+                                estadoTexto = 'Pendiente';
+                            }
+                            
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>
+                                    <strong>${res.tipo_alojamiento}</strong><br>
+                                    <small style="color: #717171;">${res.ciudad}, ${res.estado}</small>
+                                </td>
+                                <td>${fechaInicio} - ${fechaFin}</td>
+                                <td>${res.numero_huespedes} ${res.numero_huespedes === 1 ? 'huésped' : 'huéspedes'}</td>
+                                <td><strong>$${parseFloat(res.precio_total).toLocaleString('es-MX')} MXN</strong></td>
+                                <td><span class="${badgeClass}">${estadoTexto}</span></td>
+                                <td>
+                                    <button onclick="verDetalleReservacion(${res.id})" class="btn-tabla-accion" title="Ver detalles">
+                                        👁️
+                                    </button>
+                                    ${res.estado_reservacion === 'confirmada' ? `
+                                        <button onclick="cancelarReservacion(${res.id})" class="btn-tabla-accion btn-cancelar" title="Cancelar">
+                                            
+                                        </button>
+                                    ` : ''}
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                } else {
+                    console.log('No se encontraron reservaciones');
+                    document.getElementById('statReservaciones').textContent = '0';
+                    document.getElementById('statGastoTotal').textContent = '$0';
+                }
+            } catch (error) {
+                console.error('Error cargando reservaciones:', error);
+            }
+        }
+
+        // Ver detalle de reservación
+        function verDetalleReservacion(reservacionId) {
+            alert('Función en desarrollo: Ver detalles de reservación #' + reservacionId);
+            // Aquí puedes agregar un modal o redirigir a una página de detalles
+        }
+
+        // Cancelar reservación
+        async function cancelarReservacion(reservacionId) {
+            if (!confirm('¿Estás seguro de que deseas cancelar esta reservación?')) {
+                return;
+            }
+            
+            alert('Función en desarrollo: Cancelar reservación #' + reservacionId);
+            // TODO: Implementar endpoint para cancelar
+            // Podrías agregar en ReservacionController.php un método PUT/DELETE
+        }
+
         document.addEventListener('DOMContentLoaded', cargarDatosPerfil);
     </script>
+
 </body>
 </html>

@@ -1,3 +1,6 @@
+7.27 KB •190 líneas
+•
+El formato puede ser inconsistente con la fuente
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,15 +8,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomeAway - Búsqueda de Alojamientos</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    
 </head>
 <body class="pagina-principal">
   
    <header class="header">
-
     <img src="../assets/img/Logo_azul.png" alt="Logo" class="logo">
     
     <div class="menu-container">
-        <!-- Ícono de usuario -->
         <div class="icono-usuario" id="iconoUsuario" style="display: none;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -21,8 +23,6 @@
             </svg>
         </div>
         
-        
-        <!-- Menú hamburguesa  -->
         <div class="menu-hamburguesa">
             <button class="boton-menu">
                 <span class="linea"></span>
@@ -30,13 +30,11 @@
                 <span class="linea"></span>
             </button>
             
-            <!-- Menú sin sesión -->
             <div class="dropdown-menu" id="menuSinSesion">
                 <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
-                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+                <a href="#" class="menu-item">Conviértete en anfitrión</a>
             </div>
             
-            <!-- Menú con sesión -->
             <div class="dropdown-menu" id="menuConSesion" style="display: none;">
                 <div class="user-info-menu">
                     <strong id="nombreUsuarioMenu">Usuario</strong>
@@ -44,7 +42,7 @@
                 </div>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
                 <a href="#" class="menu-item">Mi perfil</a>
-                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+                <a href="#" class="menu-item">Conviértete en anfitrión</a>
                 <a href="CerrarSesion.html" class="menu-item">Cerrar sesión</a>
             </div>
         </div>
@@ -93,8 +91,103 @@
             </div>
         </div>
     </div>
+</div>
 
-    
-       <script src="../assets/javascript/main.js"></script>
+    <!-- Botón de Reservar fijo en la esquina inferior derecha -->
+    <button class="boton-reservar-fijo" onclick="abrirModalReserva()">
+        Reservar
+    </button>
+
+    <!-- Modal de Reservación (OCULTO por defecto) -->
+    <div class="modal-reserva" id="modalReserva" onclick="cerrarModalSiFueraClick(event)">
+        <div class="modal-contenido">
+            <button class="boton-cerrar" onclick="cerrarModalReserva()">×</button>
+            
+            <div class="modal-header">
+                <div class="precio-modal">$2,900 MXN</div>
+                <div class="noches-modal">por 2 noches</div>
+            </div>
+
+            <div class="fila-fechas">
+                <div class="campo-fecha">
+                    <label class="label-fecha">Llegada</label>
+                    <input type="date" class="input-fecha" id="fechaLlegada" placeholder="Agregar fecha">
+                </div>
+                <div class="campo-fecha">
+                    <label class="label-fecha">Salida</label>
+                    <input type="date" class="input-fecha" id="fechaSalida" placeholder="Agregar fecha">
+                </div>
+            </div>
+
+            <div class="campo-huespedes">
+                <label class="label-huespedes">Huéspedes</label>
+                <div class="contador-huespedes">
+                    <button class="boton-contador" onclick="cambiarHuespedes(-1)" id="btnMenos" disabled>-</button>
+                    <span class="numero-huespedes" id="numHuespedes">0</span>
+                    <button class="boton-contador" onclick="cambiarHuespedes(1)">+</button>
+                </div>
+            </div>
+
+            <button class="boton-verificar" onclick="verificarDisponibilidad()">
+                Verificar disponibilidad
+            </button>
+        </div>
+    </div>
+
+    <script src="../assets/javascript/main.js"></script>
+    <script>
+        let numHuespedes = 0;
+
+        function abrirModalReserva() {
+            document.getElementById('modalReserva').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalReserva() {
+            document.getElementById('modalReserva').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function cerrarModalSiFueraClick(event) {
+            if (event.target.id === 'modalReserva') {
+                cerrarModalReserva();
+            }
+        }
+
+        function cambiarHuespedes(cambio) {
+            numHuespedes += cambio;
+            if (numHuespedes < 0) numHuespedes = 0;
+            
+            document.getElementById('numHuespedes').textContent = numHuespedes;
+            document.getElementById('btnMenos').disabled = numHuespedes === 0;
+        }
+
+        function verificarDisponibilidad() {
+            const fechaLlegada = document.getElementById('fechaLlegada').value;
+            const fechaSalida = document.getElementById('fechaSalida').value;
+            
+            if (!fechaLlegada || !fechaSalida) {
+                alert('Por favor selecciona las fechas de llegada y salida');
+                return;
+            }
+
+            if (numHuespedes === 0) {
+                alert('Por favor indica el número de huéspedes');
+                return;
+            }
+
+            alert(`¡Reserva confirmada!\nLlegada: ${fechaLlegada}\nSalida: ${fechaSalida}\nHuéspedes: ${numHuespedes}`);
+            cerrarModalReserva();
+        }
+
+        // Cerrar con ESC
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('modalReserva').classList.contains('active')) {
+                if (e.key === 'Escape') {
+                    cerrarModalReserva();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
