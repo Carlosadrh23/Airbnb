@@ -27,6 +27,43 @@
     </div>
 
     <script src="../assets/javascript/main.js"></script>
-    <script src="../assets/javascript/RegistroAnfitrion.js"></script>
+    <script>
+        // Cargar tipo de propiedad guardado 
+        document.addEventListener('DOMContentLoaded', function() {
+            const datosPropiedad = JSON.parse(sessionStorage.getItem('datosPropiedad') || '{}');
+            
+            if (datosPropiedad.tipoAlojamiento) {
+                const botones = document.querySelectorAll('.option-button');
+                botones.forEach(boton => {
+                    if (boton.getAttribute('data-tipo') === datosPropiedad.tipoAlojamiento) {
+                        boton.classList.add('selected');
+                    }
+                });
+            }
+        });
+
+        // Manejar selección de tipo de propiedad
+        const botones = document.querySelectorAll('.option-button');
+        
+        botones.forEach(boton => {
+            boton.addEventListener('click', function() {
+                const tipoSeleccionado = this.getAttribute('data-tipo');
+                
+                
+                const datosPropiedad = JSON.parse(sessionStorage.getItem('datosPropiedad') || '{}');
+                
+                // Guardar el tipo de alojamiento
+                datosPropiedad.tipoAlojamiento = tipoSeleccionado;
+                
+                // Guardar en sessionStorage
+                sessionStorage.setItem('datosPropiedad', JSON.stringify(datosPropiedad));
+                
+                console.log('Datos guardados:', datosPropiedad);
+                
+                // Ir al siguiente paso
+                window.location.href = 'Anfitrion2.html';
+            });
+        });
+    </script>
 </body>
 </html>

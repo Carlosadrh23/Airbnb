@@ -60,6 +60,47 @@
     </div>
 
     <script src="../assets/javascript/main.js"></script>
-    <script src="../assets/javascript/RegistroAnfitrion.js"></script>
+    <script>
+        // Cargar datos guardados 
+        document.addEventListener('DOMContentLoaded', function() {
+            const datosPropiedad = JSON.parse(sessionStorage.getItem('datosPropiedad') || '{}');
+            
+            // Rellenar campos si hay datos guardados
+            if (datosPropiedad.region) document.getElementById('region').value = datosPropiedad.region;
+            if (datosPropiedad.direccion) document.getElementById('direccion').value = datosPropiedad.direccion;
+            if (datosPropiedad.departamento) document.getElementById('departamento').value = datosPropiedad.departamento;
+            if (datosPropiedad.zona) document.getElementById('zona').value = datosPropiedad.zona;
+            if (datosPropiedad.codigoPostal) document.getElementById('codigoPostal').value = datosPropiedad.codigoPostal;
+            if (datosPropiedad.ciudad) document.getElementById('ciudad').value = datosPropiedad.ciudad;
+            if (datosPropiedad.estado) document.getElementById('estado').value = datosPropiedad.estado;
+        });
+
+        // Manejar envío del formulario
+        const formDireccion = document.getElementById('formDireccion');
+        
+        formDireccion.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtener datos existentes del paso anterior
+            const datosPropiedad = JSON.parse(sessionStorage.getItem('datosPropiedad') || '{}');
+            
+            // Agregar los datos de dirección
+            datosPropiedad.region = document.getElementById('region').value;
+            datosPropiedad.direccion = document.getElementById('direccion').value;
+            datosPropiedad.departamento = document.getElementById('departamento').value;
+            datosPropiedad.zona = document.getElementById('zona').value;
+            datosPropiedad.codigoPostal = document.getElementById('codigoPostal').value;
+            datosPropiedad.ciudad = document.getElementById('ciudad').value;
+            datosPropiedad.estado = document.getElementById('estado').value;
+            
+            // Guardar en sessionStorage
+            sessionStorage.setItem('datosPropiedad', JSON.stringify(datosPropiedad));
+            
+            console.log('Datos completos guardados:', datosPropiedad);
+            
+            
+            window.location.href = 'PrecioXNoche.html';
+        });
+    </script>
 </body>
 </html>

@@ -16,8 +16,8 @@
     <div class="container container-resumen paso-4">
         <div class="icono-exito">
             <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-                <circle cx="40" cy="40" r="38" stroke="#222222" stroke-width="4"/>
-                <path d="M25 40L35 50L55 30" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="40" cy="40" r="38" stroke="#5B8A8F" stroke-width="4"/>
+                <path d="M25 40L35 50L55 30" stroke="#5B8A8F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
         </div>
 
@@ -46,12 +46,62 @@
                 <span class="label-resumen">Estado:</span>
                 <span class="valor-resumen" id="resumenEstado">-</span>
             </div>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Precio por noche:</span>
+                <span class="valor-resumen" id="resumenPrecio">-</span>
+            </div>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Mínimo de noches:</span>
+                <span class="valor-resumen" id="resumenNoches">-</span>
+            </div>
+            
+            <div class="detalle-resumen">
+                <span class="label-resumen">Imágenes agregadas:</span>
+                <span class="valor-resumen" id="resumenImagenes">-</span>
+            </div>
         </div>
 
         <button class="boton-finalizar" onclick="finalizarRegistro()">Finalizar</button>
     </div>
 
     <script src="../assets/javascript/main.js"></script>
-    <script src="../assets/javascript/RegistroAnfitrion.js"></script>
+    <script>
+        // Cargar y mostrar datos del registro exitoso
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultadoRegistro = JSON.parse(sessionStorage.getItem('resultadoRegistro') || '{}');
+            
+            // Si no hay datos, redirigir al inicio
+            if (!resultadoRegistro.tipo) {
+                window.location.href = 'index.php';
+                return;
+            }
+            
+            // Mostrar los datos en el resumen
+            document.getElementById('resumenTipo').textContent = resultadoRegistro.tipo || '-';
+            document.getElementById('resumenDireccion').textContent = resultadoRegistro.direccion || '-';
+            document.getElementById('resumenCiudad').textContent = resultadoRegistro.ciudad || '-';
+            document.getElementById('resumenEstado').textContent = resultadoRegistro.estado || '-';
+            document.getElementById('resumenPrecio').textContent = resultadoRegistro.precio 
+                ? '$' + parseFloat(resultadoRegistro.precio).toLocaleString('es-MX') + ' MXN' 
+                : '-';
+            document.getElementById('resumenNoches').textContent = resultadoRegistro.noches 
+                ? resultadoRegistro.noches + (resultadoRegistro.noches === 1 ? ' noche' : ' noches')
+                : '-';
+            document.getElementById('resumenImagenes').textContent = resultadoRegistro.imagenes 
+                ? resultadoRegistro.imagenes + (resultadoRegistro.imagenes === 1 ? ' imagen' : ' imágenes')
+                : '-';
+        });
+        
+        function finalizarRegistro() {
+            // Limpiar todos los datos guardados
+            sessionStorage.removeItem('datosPropiedad');
+            sessionStorage.removeItem('resultadoRegistro');
+            
+            // Redirigir al inicio
+            window.location.href = 'index.php';
+        }
+    </script>
 </body>
 </html>

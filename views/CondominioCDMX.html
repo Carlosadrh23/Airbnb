@@ -1,14 +1,10 @@
-7.27 KB •190 líneas
-•
-El formato puede ser inconsistente con la fuente
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomeAway - Búsqueda de Alojamientos</title>
+    <title>Condominio en Ciudad de México - HomeAway</title>
     <link rel="stylesheet" href="../assets/styles.css">
-    
 </head>
 <body class="pagina-principal">
   
@@ -32,7 +28,7 @@ El formato puede ser inconsistente con la fuente
             
             <div class="dropdown-menu" id="menuSinSesion">
                 <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
-                <a href="#" class="menu-item">Conviértete en anfitrión</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviértete en anfitrión</a>
             </div>
             
             <div class="dropdown-menu" id="menuConSesion" style="display: none;">
@@ -41,15 +37,15 @@ El formato puede ser inconsistente con la fuente
                     <small id="emailUsuarioMenu">email@ejemplo.com</small>
                 </div>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
-                <a href="#" class="menu-item">Mi perfil</a>
-                <a href="#" class="menu-item">Conviértete en anfitrión</a>
-                <a href="CerrarSesion.html" class="menu-item">Cerrar sesión</a>
+                <a href="Perfil.html" class="menu-item">Mi perfil</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviértete en anfitrión</a>
+                <a href="CerrarSesion.php" class="menu-item">Cerrar sesión</a>
             </div>
         </div>
     </div>
 </header>
 
- <div class="search-bar">
+    <div class="search-bar">
         <div class="search-option">
             <span class="label">Destino</span>
             <span class="value">Buscar destinos</span>
@@ -75,36 +71,34 @@ El formato puede ser inconsistente con la fuente
 
     <h1>Condominio en Ciudad de México</h1>
 
-   <div class="propiedades">
-    
-    <!-- Condominio CDMX -->
-    <div class="condominio">
-        <div class="contenedor-img">
-            <img src="../assets/img/condominio.png" alt="Condominio en Ciudad de México" class="img-condominio">
-        </div>
-        <div class="info-condominio">
-            <h3 class="titulo-condominio">Condominio en Ciudad de México</h3>
-            <p class="precio">$2500 MXN <span class="noches">por 2 noches</span></p>
-            <div class="rating">
-                <span class="estrella">★</span>
-                <span class="valor-rating">4,9</span>
+    <div class="propiedades">
+        <div class="condominio">
+            <div class="contenedor-img">
+                <img src="../assets/img/condominio.png" alt="Condominio en Ciudad de México" class="img-condominio">
+            </div>
+            <div class="info-condominio">
+                <h3 class="titulo-condominio">Condominio en Ciudad de México</h3>
+                <p class="precio">$2,500 MXN <span class="noches">por 2 noches</span></p>
+                <div class="rating">
+                    <span class="estrella">★</span>
+                    <span class="valor-rating">4.9</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-    <!-- Botón de Reservar fijo en la esquina inferior derecha -->
+    <!-- Botón de Reservar fijo -->
     <button class="boton-reservar-fijo" onclick="abrirModalReserva()">
         Reservar
     </button>
 
-    <!-- Modal de Reservación (OCULTO por defecto) -->
+    <!-- Modal de Reservación -->
     <div class="modal-reserva" id="modalReserva" onclick="cerrarModalSiFueraClick(event)">
         <div class="modal-contenido">
             <button class="boton-cerrar" onclick="cerrarModalReserva()">×</button>
             
             <div class="modal-header">
-                <div class="precio-modal">$2,900 MXN</div>
+                <div class="precio-modal">$2,500 MXN</div>
                 <div class="noches-modal">por 2 noches</div>
             </div>
 
@@ -123,20 +117,22 @@ El formato puede ser inconsistente con la fuente
                 <label class="label-huespedes">Huéspedes</label>
                 <div class="contador-huespedes">
                     <button class="boton-contador" onclick="cambiarHuespedes(-1)" id="btnMenos" disabled>-</button>
-                    <span class="numero-huespedes" id="numHuespedes">0</span>
+                    <span class="numero-huespedes" id="numHuespedes">1</span>
                     <button class="boton-contador" onclick="cambiarHuespedes(1)">+</button>
                 </div>
             </div>
 
-            <button class="boton-verificar" onclick="verificarDisponibilidad()">
-                Verificar disponibilidad
+            <button class="boton-verificar" onclick="irAPagar()">
+                Reservar ahora
             </button>
         </div>
     </div>
 
     <script src="../assets/javascript/main.js"></script>
     <script>
-        let numHuespedes = 0;
+        // ID de esta propiedad (puedes ajustarlo si tienes un ID real en la BD)
+        const PROPIEDAD_ID = 1;
+        let numHuespedes = 1;
 
         function abrirModalReserva() {
             document.getElementById('modalReserva').classList.add('active');
@@ -156,13 +152,13 @@ El formato puede ser inconsistente con la fuente
 
         function cambiarHuespedes(cambio) {
             numHuespedes += cambio;
-            if (numHuespedes < 0) numHuespedes = 0;
+            if (numHuespedes < 1) numHuespedes = 1;
             
             document.getElementById('numHuespedes').textContent = numHuespedes;
-            document.getElementById('btnMenos').disabled = numHuespedes === 0;
+            document.getElementById('btnMenos').disabled = numHuespedes === 1;
         }
 
-        function verificarDisponibilidad() {
+        function irAPagar() {
             const fechaLlegada = document.getElementById('fechaLlegada').value;
             const fechaSalida = document.getElementById('fechaSalida').value;
             
@@ -171,13 +167,14 @@ El formato puede ser inconsistente con la fuente
                 return;
             }
 
-            if (numHuespedes === 0) {
-                alert('Por favor indica el número de huéspedes');
+            if (new Date(fechaLlegada) >= new Date(fechaSalida)) {
+                alert('La fecha de salida debe ser posterior a la fecha de llegada');
                 return;
             }
 
-            alert(`¡Reserva confirmada!\nLlegada: ${fechaLlegada}\nSalida: ${fechaSalida}\nHuéspedes: ${numHuespedes}`);
-            cerrarModalReserva();
+            // Redirigir a la página de pago con los datos
+            const url = `ConfirmarPago.php?propiedad_id=${PROPIEDAD_ID}&fecha_inicio=${fechaLlegada}&fecha_fin=${fechaSalida}&num_huespedes=${numHuespedes}`;
+            window.location.href = url;
         }
 
         // Cerrar con ESC
@@ -188,6 +185,11 @@ El formato puede ser inconsistente con la fuente
                 }
             }
         });
+
+        // Establecer fecha mínima como hoy
+        const hoy = new Date().toISOString().split('T')[0];
+        document.getElementById('fechaLlegada').setAttribute('min', hoy);
+        document.getElementById('fechaSalida').setAttribute('min', hoy);
     </script>
 </body>
 </html>

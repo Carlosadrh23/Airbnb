@@ -48,6 +48,10 @@ $numeroNoches = $inicio->diff($fin)->days;
 $precioTotal = $propiedad['precio_noche'] * $numeroNoches;
 
 $conexion->close();
+
+// Formatear fecha en español
+setlocale(LC_TIME, 'es_ES.UTF-8', 'es_ES', 'Spanish');
+$fechaFormateada = strftime('%A, %d de %B de %Y', strtotime($fechaInicio));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -56,6 +60,7 @@ $conexion->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirmar y pagar - HomeAway</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="../assets/styles2.css">
 </head>
 <body>
     <header class="header">
@@ -64,88 +69,92 @@ $conexion->close();
         </a>
     </header>
 
+    <div style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+        <button class="back-button" onclick="history.back()">←</button>
+        <h1 class="titulo-pagina">Confirmar y pagar</h1>
+    </div>
+
     <div class="contenedor-pago">
-        <div class="seccion-izquierda">
-            <button class="back-button" onclick="history.back()">←</button>
-            
-            <h1 class="titulo-seccion">Confirmar y pagar</h1>
-            
-            <h2 style="font-size: 22px; margin-bottom: 15px;">Tu viaje</h2>
-            <div class="card-info">
-                <div class="fila-info">
-                    <strong>Fechas:</strong>
-                    <span><?php echo date('d M', strtotime($fechaInicio)); ?> - <?php echo date('d M Y', strtotime($fechaFin)); ?></span>
-                </div>
-                <div class="fila-info">
-                    <strong>Huéspedes:</strong>
-                    <span><?php echo $numHuespedes; ?></span>
-                </div>
-                <div class="fila-info">
-                    <strong>Noches:</strong>
-                    <span><?php echo $numeroNoches; ?></span>
-                </div>
+        <!-- COLUMNA IZQUIERDA -->
+        <div class="columna-izquierda">
+            <!-- PASO 1: Precio inicial -->
+            <div class="seccion-pago" id="paso1">
+                <div class="precio-grande">Paga $<?php echo number_format($precioTotal, 0); ?> MXN</div>
+                <button class="boton-listo" onclick="mostrarMetodoPago()">Listo</button>
             </div>
             
-            <h2 style="font-size: 22px; margin: 30px 0 15px;">Agrega una forma de pago</h2>
-            <div id="metodosPago">
-                <label class="metodo-pago-option">
-                    <input type="radio" name="metodo_pago" value="tarjeta" checked>
-                    <span>💳 Tarjeta de crédito o débito</span>
-                </label>
+            <!-- PASO 2: Método de pago -->
+            <div class="seccion-pago" id="paso2" style="display: none;">
+                <h2 style="font-size: 20px; margin-bottom: 16px;">Paga</h2>
+                <h3 style="font-size: 18px; margin-bottom: 16px;">Agrega una forma de pago</h3>
                 
-                <label class="metodo-pago-option">
-                    <input type="radio" name="metodo_pago" value="paypal">
-                    <span> PayPal</span>
-                </label>
+                <div class="metodo-pago-item">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" fill="none" stroke-width="2"/>
+                        <line x1="2" y1="10" x2="22" y2="10" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span>Tarjeta de crédito o débito</span>
+                </div>
                 
-                <label class="metodo-pago-option">
-                    <input type="radio" name="metodo_pago" value="oxxo">
-                    <span> OXXO Pay</span>
-                </label>
+                <div class="form-pago">
+                    <input type="text" class="input-pago" placeholder="Número de tarjeta" id="numTarjeta" maxlength="16">
+                    <div class="fila-input">
+                        <input type="text" class="input-pago" placeholder="Caducidad (MM/YY)" id="caducidad" maxlength="5">
+                        <input type="text" class="input-pago" placeholder="CVV" id="cvv" maxlength="3">
+                    </div>
+                    <input type="text" class="input-pago" placeholder="Código postal" id="codigoPostal" maxlength="5">
+                </div>
                 
-                <label class="metodo-pago-option">
-                    <input type="radio" name="metodo_pago" value="transferencia">
-                    <span>Transferencia bancaria</span>
-                </label>
+                <button class="boton-listo" onclick="procesarPago()" id="btnPagar">Listo</button>
             </div>
             
-            <h2 style="font-size: 22px; margin: 30px 0 15px;">Revisa tu reservación</h2>
-            <div class="info-propiedad">
+            <!-- PASO 3: Confirmación -->
+            <div class="seccion-pago" id="paso3" style="display: none;">
+                <h2 style="font-size: 20px; margin-bottom: 0;">Tu reservación se ha completado</h2>
+                
+                <div class="seccion-confirmacion">
+                    <div class="icono-check">✓</div>
+                    <div class="titulo-confirmacion">Gracias por reservar</div>
+                    <div class="detalle-confirmacion" id="detallesReserva">
+                        <div style="margin-bottom: 8px;">Número de la reserva <strong id="numReserva"></strong></div>
+                        <div style="margin-bottom: 8px;">Reserva confirmada el <strong id="fechaConfirmacion"></strong></div>
+                        <div style="margin-bottom: 8px;">Nombre <strong><?php echo isset($_SESSION['nombre']) ? $_SESSION['nombre'] : 'Usuario'; ?></strong></div>
+                        <div>Correo <strong><?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?></strong></div>
+                    </div>
+                    <button class="boton-volver" onclick="window.location.href='index.php'">Volver al inicio</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COLUMNA DERECHA -->
+        <div class="columna-derecha">
+            <div class="card-resumen">
                 <?php 
                 $imagenUrl = $propiedad['imagen_url'] 
                     ? '../assets/img/propiedades/' . $propiedad['imagen_url'] 
                     : '../assets/img/placeholder.png';
                 ?>
-                <img src="<?php echo $imagenUrl; ?>" alt="Propiedad" class="imagen-mini">
-                <div>
-                    <h3 style="font-size: 18px; margin-bottom: 5px;"><?php echo ucfirst($propiedad['tipo_alojamiento']); ?> en <?php echo $propiedad['ciudad']; ?></h3>
-                    <p style="color: #717171; font-size: 14px;"><?php echo $propiedad['direccion']; ?></p>
-                    <p style="color: #717171; font-size: 14px;">Anfitrión: <?php echo $propiedad['nombre_anfitrion']; ?></p>
+                <img src="<?php echo $imagenUrl; ?>" alt="Propiedad" class="imagen-propiedad-mini">
+                <h3 style="margin-bottom: 8px;"><?php echo ucfirst($propiedad['tipo_alojamiento']); ?> en <?php echo $propiedad['ciudad']; ?></h3>
+                
+                <div style="margin-top: 16px;">
+                    <p style="font-size: 14px; color: #222; margin-bottom: 8px;"><strong>Cancelación gratuita</strong></p>
+                    <p style="font-size: 13px; color: #717171;">Si cancelas antes del <?php echo date('d M Y', strtotime($fechaInicio . ' -1 day')); ?>, recibirás reembolso completo.</p>
                 </div>
-            </div>
-            
-            <div class="politica">
-                <strong>✓ Cancelación gratuita</strong>
-                <p style="margin-top: 8px;">Si cancelas antes del <?php echo date('d M Y', strtotime($fechaInicio . ' -1 day')); ?>, recibirás reembolso completo.</p>
-            </div>
-        </div>
-        
-        <div class="seccion-derecha">
-            <div class="precio-total">
-                Paga $<?php echo number_format($precioTotal, 0); ?> MXN
-            </div>
-            
-            <button class="boton-pagar" id="btnPagar" onclick="procesarPago()">Listo</button>
-            
-            <div class="desglose">
-                <h3 style="font-size: 16px; margin-bottom: 12px;">Desglose de precios</h3>
-                <div class="fila-info">
-                    <span>$<?php echo number_format($propiedad['precio_noche'], 0); ?> x <?php echo $numeroNoches; ?> noches</span>
-                    <span>$<?php echo number_format($precioTotal, 0); ?></span>
-                </div>
-                <div class="fila-info" style="padding-top: 15px; border-top: 1px solid #EBEBEB; margin-top: 15px;">
-                    <strong>Total</strong>
-                    <strong>$<?php echo number_format($precioTotal, 0); ?> MXN</strong>
+                
+                <div style="margin-top: 16px;">
+                    <div class="info-item">
+                        <span>Fechas</span>
+                        <span><?php echo date('d-m', strtotime($fechaInicio)); ?> - <?php echo date('d-m', strtotime($fechaFin)); ?> de 2025</span>
+                    </div>
+                    <div class="info-item">
+                        <span>Huéspedes</span>
+                        <span><?php echo $numHuespedes; ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span>Total</span>
+                        <span>$<?php echo number_format($precioTotal, 0); ?> MXN</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -159,16 +168,35 @@ $conexion->close();
             num_huespedes: <?php echo $numHuespedes; ?>
         };
         
-        // Selección visual de método de pago
-        document.querySelectorAll('.metodo-pago-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.metodo-pago-option').forEach(o => o.classList.remove('selected'));
-                this.classList.add('selected');
-                this.querySelector('input').checked = true;
-            });
-        });
+        function mostrarMetodoPago() {
+            document.getElementById('paso1').style.display = 'none';
+            document.getElementById('paso2').style.display = 'block';
+        }
         
         async function procesarPago() {
+            // Validar campos
+            const numTarjeta = document.getElementById('numTarjeta').value;
+            const caducidad = document.getElementById('caducidad').value;
+            const cvv = document.getElementById('cvv').value;
+            const codigoPostal = document.getElementById('codigoPostal').value;
+            
+            if (!numTarjeta || !caducidad || !cvv || !codigoPostal) {
+                alert('Por favor completa todos los campos de pago');
+                return;
+            }
+            
+            // Validar número de tarjeta (16 dígitos)
+            if (numTarjeta.length < 13) {
+                alert('El número de tarjeta debe tener al menos 13 dígitos');
+                return;
+            }
+            
+            // Validar CVV (3 dígitos)
+            if (cvv.length < 3) {
+                alert('El CVV debe tener 3 dígitos');
+                return;
+            }
+            
             const btnPagar = document.getElementById('btnPagar');
             btnPagar.disabled = true;
             btnPagar.textContent = 'Procesando...';
@@ -186,8 +214,20 @@ $conexion->close();
                 const resultado = await response.json();
                 
                 if (resultado.success) {
-                    alert('¡Reservación confirmada exitosamente!\n\nNúmero de reservación: #' + resultado.reservacion.id);
-                    window.location.href = 'Perfil.html';
+                    // Ocultar paso 2
+                    document.getElementById('paso2').style.display = 'none';
+                    
+                    // Mostrar confirmación con animación
+                    document.getElementById('paso3').style.display = 'block';
+                    document.getElementById('numReserva').textContent = '#' + resultado.reservacion.id;
+                    
+                    
+                    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                    const fechaHoy = new Date().toLocaleDateString('es-ES', opciones);
+                    document.getElementById('fechaConfirmacion').textContent = fechaHoy;
+                    
+                    // Scroll  para la confirmación
+                    document.getElementById('paso3').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } else {
                     alert('Error: ' + resultado.message);
                     btnPagar.disabled = false;

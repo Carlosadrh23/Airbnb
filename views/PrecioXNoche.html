@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homeaway - Configura tu anuncio</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    
 </head>
 <body class="pagina-tipo-propiedad">
     <div class="seccion-izquierda">
@@ -20,8 +21,18 @@
         <p class="subtitle">Establece el precio por noche y agrega una foto de tu propiedad.</p>
 
         <form class="form-precio" id="formPrecio">
+            <!-- Campos ocultos para datos de pasos anteriores -->
+            <input type="hidden" name="tipoAlojamiento" id="tipoAlojamiento">
+            <input type="hidden" name="region" id="region">
+            <input type="hidden" name="direccion" id="direccion">
+            <input type="hidden" name="departamento" id="departamento">
+            <input type="hidden" name="zona" id="zona">
+            <input type="hidden" name="codigoPostal" id="codigoPostal">
+            <input type="hidden" name="ciudad" id="ciudad">
+            <input type="hidden" name="estado" id="estado">
+
             <div class="grupo-input">
-                <label class="label-input">Precio por noche </label>
+                <label class="label-input">Precio por noche</label>
                 <div class="input-precio-container">
                     <span class="simbolo-moneda">$</span>
                     <input type="text" class="input-field input-precio" name="precioNoche" id="precioNoche" placeholder="0" required>
@@ -29,12 +40,12 @@
             </div>
 
             <div class="grupo-input">
-                <label class="label-input">Numero de noches </label>
+                <label class="label-input">Número de noches</label>
                 <input type="number" class="input-field" name="numeroNoches" id="numeroNoches" placeholder="1" min="1" required>
             </div>
 
             <div class="grupo-input">
-                <label class="label-input">Descripcion de tu propiedad </label>
+                <label class="label-input">Descripción de tu propiedad</label>
                 <textarea class="input-field" name="descripcion" id="descripcion" placeholder="Describe tu propiedad." rows="4" required></textarea>
             </div>
 
@@ -43,14 +54,11 @@
                 
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon"></div>
-                    <div class="upload-text">Haz clic o arrastra una foto aqui</div>
+                    <div class="upload-text">Haz clic o arrastra una foto aquí</div>
                     <div class="upload-subtext">JPG, PNG o WEBP (max. 5MB)</div>
                 </div>
 
-                <div class="preview-container" id="previewContainer" style="display: none;">
-                    <img id="previewImage" class="preview-image" alt="Preview">
-                    <button type="button" class="remove-image" id="removeImage">×</button>
-                </div>
+                <div class="preview-container" id="previewContainer" style="display: none;"></div>
 
                 <input type="file" name="imagen" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
             </div>
@@ -60,6 +68,222 @@
     </div>
 
     <script src="../assets/javascript/main.js"></script>
-    <script src="../assets/javascript/RegistroAnfitrion.js"></script>
+    <script>
+        // Cargar datos de pasos anteriores desde sessionStorage
+        document.addEventListener('DOMContentLoaded', function() {
+            const datosPropiedad = JSON.parse(sessionStorage.getItem('datosPropiedad') || '{}');
+            
+            // Llenar campos ocultos con datos guardados
+            if (datosPropiedad.tipoAlojamiento) {
+                document.getElementById('tipoAlojamiento').value = datosPropiedad.tipoAlojamiento;
+            }
+            if (datosPropiedad.region) {
+                document.getElementById('region').value = datosPropiedad.region;
+            }
+            if (datosPropiedad.direccion) {
+                document.getElementById('direccion').value = datosPropiedad.direccion;
+            }
+            if (datosPropiedad.departamento) {
+                document.getElementById('departamento').value = datosPropiedad.departamento;
+            }
+            if (datosPropiedad.zona) {
+                document.getElementById('zona').value = datosPropiedad.zona;
+            }
+            if (datosPropiedad.codigoPostal) {
+                document.getElementById('codigoPostal').value = datosPropiedad.codigoPostal;
+            }
+            if (datosPropiedad.ciudad) {
+                document.getElementById('ciudad').value = datosPropiedad.ciudad;
+            }
+            if (datosPropiedad.estado) {
+                document.getElementById('estado').value = datosPropiedad.estado;
+            }
+            
+            // Formatear precio mientras el usuario escribe
+            const precioInput = document.getElementById('precioNoche');
+            precioInput.addEventListener('input', function(e) {
+                let valor = e.target.value.replace(/[^0-9]/g, ''); // Solo números
+                if (valor) {
+                    valor = parseInt(valor).toLocaleString('es-MX'); // Formato con comas
+                    e.target.value = valor;
+                }
+            });
+        });
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const formPrecio = document.getElementById('formPrecio');
+        
+        let selectedFile = null;
+
+        // Click en área de carga
+        uploadArea.addEventListener('click', () => {
+            if (!selectedFile) {
+                fileInput.click();
+            }
+        });
+
+        // Selección de archivos
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+            fileInput.value = ''; // Reset para permitir seleccionar otra imagen
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!selectedFile) {
+                uploadArea.classList.add('dragover');
+            }
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            if (!selectedFile && e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.match('image.*')) {
+                alert('Solo se permiten imágenes');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('La imagen no puede superar 5MB');
+                return;
+            }
+
+            selectedFile = file;
+            displayPreview(file);
+            updateUI();
+        }
+
+        function displayPreview(file) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                previewContainer.innerHTML = `
+                    <div class="preview-item">
+                        <img src="${e.target.result}" alt="Preview">
+                        <button type="button" class="remove-image" onclick="removeImage()">×</button>
+                    </div>
+                `;
+                previewContainer.style.display = 'block';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            selectedFile = null;
+            previewContainer.innerHTML = '';
+            previewContainer.style.display = 'none';
+            updateUI();
+        }
+
+        function updateUI() {
+            if (selectedFile) {
+                uploadArea.classList.add('disabled');
+                uploadArea.style.pointerEvents = 'none';
+            } else {
+                uploadArea.classList.remove('disabled');
+                uploadArea.style.pointerEvents = 'auto';
+            }
+        }
+
+        // Envío del formulario
+        formPrecio.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!selectedFile) {
+                alert('Debes agregar una imagen');
+                return;
+            }
+
+            // Deshabilitar botón mientras se procesa
+            const btnSubmit = document.getElementById('btnSubmit');
+            const textoOriginal = btnSubmit.textContent;
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Guardando...';
+            btnSubmit.style.opacity = '0.6';
+            btnSubmit.style.cursor = 'not-allowed';
+
+            const formData = new FormData();
+            
+            // Agregar datos de campos ocultos
+            formData.append('tipoAlojamiento', document.getElementById('tipoAlojamiento').value || '');
+            formData.append('region', document.getElementById('region').value || '');
+            formData.append('direccion', document.getElementById('direccion').value || '');
+            formData.append('departamento', document.getElementById('departamento').value || '');
+            formData.append('zona', document.getElementById('zona').value || '');
+            formData.append('codigoPostal', document.getElementById('codigoPostal').value || '');
+            formData.append('ciudad', document.getElementById('ciudad').value || '');
+            formData.append('estado', document.getElementById('estado').value || '');
+            
+            // Datos del paso actual
+            const precioInput = document.getElementById('precioNoche').value;
+            // Limpiar formato de precio 
+            const precioLimpio = precioInput.replace(/[,$\s]/g, '');
+            
+            formData.append('precioNoche', precioLimpio);
+            formData.append('numeroNoches', document.getElementById('numeroNoches').value);
+            formData.append('descripcion', document.getElementById('descripcion').value);
+            
+            // Agregar la imagen
+            formData.append('imagenes[]', selectedFile);
+
+            try {
+                const response = await fetch('../app/AnfitrionController.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                
+                const resultado = await response.json();
+                
+                console.log('Respuesta del servidor:', resultado);
+                
+                if (resultado.success) {
+                    // Guardar datos del resultado para mostrar en la página de éxito
+                    sessionStorage.setItem('resultadoRegistro', JSON.stringify(resultado.datos));
+                    
+                    // Limpiar datos de pasos anteriores
+                    sessionStorage.removeItem('datosPropiedad');
+                    
+                    // Redirigir inmediatamente a página de éxito (Anfitrion3.html)
+                    window.location.href = 'Anfitrion3.html';
+                } else {
+                    alert(resultado.message || 'Error al guardar la propiedad');
+                    
+                    // Restaurar botón
+                    btnSubmit.disabled = false;
+                    btnSubmit.textContent = textoOriginal;
+                    btnSubmit.style.opacity = '1';
+                    btnSubmit.style.cursor = 'pointer';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al comunicarse con el servidor');
+                
+                // Restaurar botón
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = textoOriginal;
+                btnSubmit.style.opacity = '1';
+                btnSubmit.style.cursor = 'pointer';
+            }
+        });
+    </script>
 </body>
 </html>

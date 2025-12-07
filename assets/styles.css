@@ -26,7 +26,6 @@ body.pagina-logout {
     overflow: hidden;
 }
 
-/* Clase para página de selección de tipo de propiedad */
 body.pagina-tipo-propiedad {
     height: 100vh;
     overflow: hidden;
@@ -38,7 +37,7 @@ body.pagina-tipo-propiedad {
     position: relative;
 }
 
-/* Fondos decorativos para página tipo propiedad */
+/* Fondos decorativos */
 body.pagina-tipo-propiedad::before {
     content: '';
     position: absolute;
@@ -63,7 +62,7 @@ body.pagina-tipo-propiedad::after {
     animation: float 15s ease-in-out infinite reverse;
 }
 
-/* Seccion izquierda para página de tipo de propiedad */
+
 body.pagina-tipo-propiedad .seccion-izquierda {
     position: absolute;
     top: 40px;
@@ -92,7 +91,7 @@ body.pagina-tipo-propiedad .logo-login {
     display: block;
 }
 
-/* Container principal de la página de tipo de propiedad */
+
 body.pagina-tipo-propiedad .container {
     background: white;
     border-radius: 16px;
@@ -376,17 +375,17 @@ body.pagina-tipo-propiedad .container {
     stroke: #222222;
 }
 
-/* ===== ESTILOS PARA LOGIN/REGISTRO ===== */
+/* ===== ESTILOS PARA LOGIN/REGISTRO  ===== */
 
-/* Contenedor principal para páginas de autenticación */
-.pagina-auth .contenedor-principal {
+
+.pagina-auth .contenedor-auth {
     display: flex;
     height: 100vh;
     width: 100%;
 }
 
-/* Sección izquierda (formulario) */
-.pagina-auth .seccion-izquierda {
+/* Panel del formulario  */
+.pagina-auth .panel-formulario {
     flex: 1;
     background: #E8E8E8;
     display: flex;
@@ -398,21 +397,21 @@ body.pagina-tipo-propiedad .container {
     align-items: center;
 }
 
-/* Logo en la sección izquierda */
-.pagina-auth .logo-container {
+/* Logo en  */
+.pagina-auth .logo-auth {
     position: absolute;
     top: 30px;
     left: 40px;
     z-index: 10;
 }
 
-.pagina-auth .logo-login {
+.pagina-auth .logo-auth img {
     width: 120px;
     height: auto;
 }
 
-/* Formulario de login/registro */
-.pagina-auth .formulario-login {
+
+.pagina-auth .card-formulario {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -426,7 +425,7 @@ body.pagina-tipo-propiedad .container {
     z-index: 10;
 }
 
-.pagina-auth .titulo-login {
+.pagina-auth .titulo-auth {
     font-size: 32px;
     font-weight: 600;
     color: #222222;
@@ -434,25 +433,25 @@ body.pagina-tipo-propiedad .container {
     text-align: center;
 }
 
-.pagina-auth .form-login {
+.pagina-auth .formulario-auth {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.pagina-auth .grupo-input {
+.pagina-auth .campo-auth {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.pagina-auth .label-input {
+.pagina-auth .label-auth {
     font-size: 14px;
     font-weight: 600;
     color: #222222;
 }
 
-.pagina-auth .input-field {
+.pagina-auth .input-auth {
     width: 100%;
     padding: 14px 16px;
     border: 1px solid #DDDDDD;
@@ -463,14 +462,14 @@ body.pagina-tipo-propiedad .container {
     transition: all 0.2s;
 }
 
-.pagina-auth .input-field:focus {
+.pagina-auth .input-auth:focus {
     outline: none;
     border-color: #5B8A8F;
     border-width: 2px;
     padding: 13px 15px;
 }
 
-.pagina-auth .boton-login {
+.pagina-auth .btn-submit-auth {
     margin-top: 16px;
     padding: 16px;
     background: #5B8A8F;
@@ -483,14 +482,14 @@ body.pagina-tipo-propiedad .container {
     transition: all 0.3s;
 }
 
-.pagina-auth .boton-login:hover {
+.pagina-auth .btn-submit-auth:hover {
     background: #4A7378;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(91, 138, 143, 0.3);
 }
 
-/* Sección derecha (CTA) */
-.pagina-auth .seccion-derecha {
+/* Panel derecha */
+.pagina-auth .panel-cta {
     flex: 1;
     background: linear-gradient(135deg, #5B8A8F 0%, #6B9A9F 50%, #7BAAAF 100%);
     display: flex;
@@ -501,8 +500,8 @@ body.pagina-tipo-propiedad .container {
     overflow: hidden;
 }
 
-/* Elementos decorativos del fondo */
-.pagina-auth .seccion-derecha::before {
+
+.pagina-auth .panel-cta::before {
     content: '';
     position: absolute;
     top: -200px;
@@ -511,10 +510,10 @@ body.pagina-tipo-propiedad .container {
     height: 600px;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-    animation: float 20s ease-in-out infinite;
+    animation: float-auth 20s ease-in-out infinite;
 }
 
-.pagina-auth .seccion-derecha::after {
+.pagina-auth .panel-cta::after {
     content: '';
     position: absolute;
     bottom: -150px;
@@ -523,25 +522,25 @@ body.pagina-tipo-propiedad .container {
     height: 500px;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-    animation: float 15s ease-in-out infinite reverse;
+    animation: float-auth 15s ease-in-out infinite reverse;
 }
 
-/* Contenido de registro */
-.pagina-auth .contenido-registro {
+
+.pagina-auth .contenido-cta {
     text-align: center;
     max-width: 400px;
     position: relative;
     z-index: 10;
 }
 
-.pagina-auth .titulo-registro {
+.pagina-auth .titulo-cta {
     font-size: 36px;
     font-weight: 600;
     color: white;
     margin-bottom: 24px;
 }
 
-.pagina-auth .texto-registro {
+.pagina-auth .texto-cta {
     font-size: 16px;
     color: white;
     line-height: 1.6;
@@ -549,7 +548,7 @@ body.pagina-tipo-propiedad .container {
     opacity: 0.95;
 }
 
-.pagina-auth .boton-registro {
+.pagina-auth .btn-cta {
     padding: 14px 40px;
     background: white;
     color: #5B8A8F;
@@ -561,24 +560,35 @@ body.pagina-tipo-propiedad .container {
     transition: all 0.3s;
 }
 
-.pagina-auth .boton-registro:hover {
+.pagina-auth .btn-cta:hover {
     background: #F7F7F7;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-/* ===== ESTILOS ESPECÍFICOS PARA PÁGINA DE REGISTRO ===== */
-/* Invertir el orden visual */
-.pagina-auth.pagina-registro .contenedor-principal {
+/* ===== ESTILOS S PARA PÁGINA DE REGISTRO ===== */
+
+.pagina-auth.pagina-registro .contenedor-auth {
     flex-direction: row-reverse;
 }
 
-/* Ocultar el logo de la sección verde en registro */
-.pagina-auth.pagina-registro .seccion-derecha .logo-container {
+.pagina-auth.pagina-registro .panel-cta .logo-auth {
     display: none;
 }
 
-/* Animación de flotación */
+
+@keyframes float-auth {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+        transform: translate(30px, -30px) rotate(5deg);
+    }
+    66% {
+        transform: translate(-20px, 20px) rotate(-5deg);
+    }
+}
+
 @keyframes float {
     0%, 100% {
         transform: translate(0, 0) rotate(0deg);
@@ -1074,6 +1084,43 @@ body.pagina-tipo-propiedad .subtitle.subtitle-direccion {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* ===== ESTILOS GENERALES PARA FORMULARIOS ===== */
+.grupo-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label-input {
+    font-size: 14px;
+    font-weight: 600;
+    color: #222222;
+}
+
+.input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #DDDDDD;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #222222;
+    background: white;
+    transition: all 0.2s;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #5B8A8F;
+    border-width: 2px;
+    padding: 13px 15px;
+}
+
+textarea.input-field {
+    resize: vertical;
+    min-height: 100px;
+    font-family: inherit;
+}
+
 /* ===== ESTILOS PARA PÁGINA DE PERFIL ===== */
 body.pagina-perfil {
     background: #f5f5f5;
@@ -1358,7 +1405,6 @@ body.pagina-perfil {
 .perfil-stat-card {
     cursor: default;
 }
-
 /* Botón de reservar fijo */
 .boton-reservar-fijo {
     position: fixed;
@@ -1738,40 +1784,40 @@ body.pagina-perfil {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 968px) {
-    .pagina-auth .contenedor-principal {
+    .pagina-auth .contenedor-auth {
         flex-direction: column;
     }
     
-    .pagina-auth.pagina-registro .contenedor-principal {
+    .pagina-auth.pagina-registro .contenedor-auth {
         flex-direction: column;
     }
 
-    .pagina-auth .seccion-izquierda,
-    .pagina-auth .seccion-derecha {
+    .pagina-auth .panel-formulario,
+    .pagina-auth .panel-cta {
         flex: none;
         height: 50vh;
     }
 
-    .pagina-auth .formulario-login {
+    .pagina-auth .card-formulario {
         padding: 35px 30px;
         max-width: 90%;
     }
 
-    .pagina-auth .titulo-login {
+    .pagina-auth .titulo-auth {
         font-size: 26px;
         margin-bottom: 25px;
     }
 
-    .pagina-auth .titulo-registro {
+    .pagina-auth .titulo-cta {
         font-size: 28px;
     }
 
-    .pagina-auth .logo-container {
+    .pagina-auth .logo-auth {
         top: 20px;
         left: 20px;
     }
 
-    .pagina-auth .logo-login {
+    .pagina-auth .logo-auth img {
         width: 90px;
     }
 
@@ -1900,39 +1946,39 @@ body.pagina-perfil {
 }
 
 @media (max-width: 568px) {
-    .pagina-auth .seccion-izquierda {
+    .pagina-auth .panel-formulario {
         padding: 20px;
     }
 
-    .pagina-auth .formulario-login {
+    .pagina-auth .card-formulario {
         padding: 30px 20px;
         max-width: 95%;
     }
 
-    .pagina-auth .titulo-login {
+    .pagina-auth .titulo-auth {
         font-size: 24px;
         margin-bottom: 20px;
     }
 
-    .pagina-auth .logo-login {
+    .pagina-auth .logo-auth img {
         width: 80px;
     }
 
-    .pagina-auth .logo-container {
+    .pagina-auth .logo-auth {
         top: 15px;
         left: 15px;
     }
 
-    .pagina-auth .titulo-registro {
+    .pagina-auth .titulo-cta {
         font-size: 24px;
     }
 
-    .pagina-auth .texto-registro {
+    .pagina-auth .texto-cta {
         font-size: 14px;
     }
 
-    .pagina-auth .seccion-derecha::before,
-    .pagina-auth .seccion-derecha::after {
+    .pagina-auth .panel-cta::before,
+    .pagina-auth .panel-cta::after {
         display: none;
     }
 

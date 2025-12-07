@@ -96,6 +96,7 @@ class UserModel {
         }
     }
 
+ 
     public function obtenerUsuarioPorId($usuarioId) {
         if (!$this->conexion) {
             return null;

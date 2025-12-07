@@ -1,4 +1,4 @@
-// RegistroAnfitrion.js - Sistema completo de registro de anfitrión
+
 const API_ANFITRION = '../app/AnfitrionController.php';
 
 // =======================================================================

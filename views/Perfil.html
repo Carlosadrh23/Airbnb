@@ -74,7 +74,6 @@
                     </div>
                 </div>
                 
-                <!-- NUEVA ESTADÍSTICA: Reservaciones -->
                 <div class="perfil-stat-card">
                     <div class="perfil-stat-numero" id="statReservaciones">0</div>
                     <div class="perfil-stat-label">
@@ -85,18 +84,6 @@
                             <line x1="3" y1="10" x2="21" y2="10"></line>
                         </svg>
                         Mis Reservaciones
-                    </div>
-                </div>
-                
-                <!-- NUEVA ESTADÍSTICA: Gasto Total -->
-                <div class="perfil-stat-card">
-                    <div class="perfil-stat-numero" id="statGastoTotal">$0</div>
-                    <div class="perfil-stat-label">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="1" x2="12" y2="23"></line>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                        </svg>
-                        Gasto Total
                     </div>
                 </div>
             </div>
@@ -128,7 +115,7 @@
                 </div>
             </div>
 
-            <!-- NUEVA SECCIÓN: Mis Reservaciones -->
+            <!-- Mis Reservaciones -->
             <div class="perfil-seccion">
                 <h2 class="perfil-seccion-titulo">Mis Reservaciones</h2>
                 
@@ -164,11 +151,12 @@
                             <th>Ubicación</th>
                             <th>Precio/noche</th>
                             <th>Estado</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaPropiedades">
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: #717171;">
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #717171;">
                                 No tienes propiedades registradas
                             </td>
                         </tr>
@@ -182,10 +170,8 @@
     <script>
         let usuarioIdGlobal = null;
 
-        // Cargar datos del perfil
         async function cargarDatosPerfil() {
             try {
-                // Primero verificar sesión
                 const responseVerificar = await fetch('../app/AuthController.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -201,7 +187,6 @@
                     return;
                 }
 
-                // Obtener datos del perfil
                 const response = await fetch('../app/AuthController.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -219,7 +204,6 @@
                     document.getElementById('perfilEmail').textContent = resultado.usuario.email;
                     document.getElementById('perfilFecha').textContent = resultado.usuario.fecha_registro;
                     
-                    // Cargar propiedades y reservaciones
                     await cargarPropiedadesUsuario(resultado.usuario.id);
                     await cargarReservacionesUsuario();
                 } else {
@@ -232,7 +216,6 @@
             }
         }
 
-        // Cargar propiedades del usuario
         async function cargarPropiedadesUsuario(usuarioId) {
             try {
                 const response = await fetch('../app/AnfitrionController.php', {
@@ -244,7 +227,6 @@
                 console.log('Propiedades:', resultado);
 
                 if (resultado.success && resultado.propiedades) {
-                    // Filtrar solo propiedades del usuario actual
                     const misPropiedades = resultado.propiedades.filter(p => p.anfitrion_id == usuarioId);
                     
                     console.log('Mis propiedades:', misPropiedades);
@@ -261,6 +243,14 @@
                                 <td>${prop.ciudad}, ${prop.estado}</td>
                                 <td>$${parseFloat(prop.precio_noche).toLocaleString('es-MX')} MXN</td>
                                 <td><span class="perfil-badge">Activo</span></td>
+                                <td>
+                                    <button onclick="eliminarPropiedad(${prop.id})" class="btn-tabla-accion btn-cancelar" title="Eliminar propiedad">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                    </button>
+                                </td>
                             `;
                             tbody.appendChild(tr);
                         });
@@ -273,7 +263,6 @@
             }
         }
 
-        // NUEVA FUNCIÓN: Cargar reservaciones del usuario
         async function cargarReservacionesUsuario() {
             try {
                 const response = await fetch('../app/ReservacionController.php', {
@@ -287,12 +276,7 @@
                 if (resultado.success && resultado.reservaciones) {
                     const reservaciones = resultado.reservaciones;
                     
-                    // Actualizar estadísticas
                     document.getElementById('statReservaciones').textContent = reservaciones.length;
-                    
-                    // Calcular gasto total
-                    const gastoTotal = reservaciones.reduce((sum, r) => sum + parseFloat(r.precio_total), 0);
-                    document.getElementById('statGastoTotal').textContent = '$' + gastoTotal.toLocaleString('es-MX');
                     
                     if (reservaciones.length > 0) {
                         const tbody = document.getElementById('tablaReservaciones');
@@ -302,17 +286,16 @@
                             const fechaInicio = new Date(res.fecha_inicio).toLocaleDateString('es-MX', { day: '2-digit', month: 'short' });
                             const fechaFin = new Date(res.fecha_fin).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
                             
-                            // Determinar color del badge según estado
                             let badgeClass = 'perfil-badge';
-                            let estadoTexto = res.estado_reservacion;
+                            let estadoTexto = res.estado;
                             
-                            if (res.estado_reservacion === 'confirmada') {
+                            if (res.estado === 'confirmada') {
                                 badgeClass += ' badge-confirmada';
                                 estadoTexto = 'Confirmada';
-                            } else if (res.estado_reservacion === 'completada') {
+                            } else if (res.estado === 'completada') {
                                 badgeClass += ' badge-completada';
                                 estadoTexto = 'Completada';
-                            } else if (res.estado_reservacion === 'cancelada') {
+                            } else if (res.estado === 'cancelada') {
                                 badgeClass += ' badge-cancelada';
                                 estadoTexto = 'Cancelada';
                             } else {
@@ -322,20 +305,20 @@
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
                                 <td>
-                                    <strong>${res.tipo_alojamiento}</strong><br>
-                                    <small style="color: #717171;">${res.ciudad}, ${res.estado}</small>
+                                    <strong>${res.propiedad.tipo}</strong><br>
+                                    <small style="color: #717171;">${res.propiedad.ciudad}, ${res.propiedad.estado}</small>
                                 </td>
                                 <td>${fechaInicio} - ${fechaFin}</td>
                                 <td>${res.numero_huespedes} ${res.numero_huespedes === 1 ? 'huésped' : 'huéspedes'}</td>
                                 <td><strong>$${parseFloat(res.precio_total).toLocaleString('es-MX')} MXN</strong></td>
                                 <td><span class="${badgeClass}">${estadoTexto}</span></td>
                                 <td>
-                                    <button onclick="verDetalleReservacion(${res.id})" class="btn-tabla-accion" title="Ver detalles">
-                                        👁️
-                                    </button>
-                                    ${res.estado_reservacion === 'confirmada' ? `
+                                    ${res.estado === 'confirmada' ? `
                                         <button onclick="cancelarReservacion(${res.id})" class="btn-tabla-accion btn-cancelar" title="Cancelar">
-                                            
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
                                         </button>
                                     ` : ''}
                                 </td>
@@ -346,28 +329,70 @@
                 } else {
                     console.log('No se encontraron reservaciones');
                     document.getElementById('statReservaciones').textContent = '0';
-                    document.getElementById('statGastoTotal').textContent = '$0';
                 }
             } catch (error) {
                 console.error('Error cargando reservaciones:', error);
             }
         }
 
-        // Ver detalle de reservación
-        function verDetalleReservacion(reservacionId) {
-            alert('Función en desarrollo: Ver detalles de reservación #' + reservacionId);
-            // Aquí puedes agregar un modal o redirigir a una página de detalles
-        }
-
-        // Cancelar reservación
         async function cancelarReservacion(reservacionId) {
             if (!confirm('¿Estás seguro de que deseas cancelar esta reservación?')) {
                 return;
             }
             
-            alert('Función en desarrollo: Cancelar reservación #' + reservacionId);
-            // TODO: Implementar endpoint para cancelar
-            // Podrías agregar en ReservacionController.php un método PUT/DELETE
+            try {
+                const response = await fetch('../app/ReservacionController.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        accion: 'cancelar',
+                        id: reservacionId 
+                    })
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    alert('Reservación cancelada correctamente');
+                    await cargarReservacionesUsuario();
+                } else {
+                    alert('Error al cancelar: ' + resultado.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al intentar cancelar la reservación');
+            }
+        }
+
+        async function eliminarPropiedad(propiedadId) {
+            if (!confirm('¿Estás seguro de eliminar esta propiedad? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('../app/AnfitrionController.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ 
+                        accion: 'eliminar',
+                        id: propiedadId 
+                    })
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    alert('Propiedad eliminada correctamente');
+                    await cargarPropiedadesUsuario(usuarioIdGlobal);
+                } else {
+                    alert('Error al eliminar: ' + resultado.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al intentar eliminar la propiedad');
+            }
         }
 
         document.addEventListener('DOMContentLoaded', cargarDatosPerfil);

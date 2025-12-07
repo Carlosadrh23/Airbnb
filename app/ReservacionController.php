@@ -8,8 +8,18 @@ error_reporting(0);
 
 session_start();
 
+// Headers CORS
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Origin: https://homeawayairbnb.infinityfreeapp.com');
+header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+// Manejar peticiones OPTIONS (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 $servidor = "sql105.infinityfree.com";
 $usuarioDb = "if0_40439028";
@@ -34,7 +44,7 @@ try {
     $conexion->set_charset("utf8mb4");
     
     // ============================================
-    // CREAR RESERVACIÓN
+    // MÉTODOS POST
     // ============================================
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
@@ -42,7 +52,7 @@ try {
         if(!isset($_SESSION['user_id'])) {
             responderJSON([
                 'success' => false,
-                'message' => 'Debes iniciar sesión para hacer una reservación',
+                'message' => 'Debes iniciar sesión',
                 'requiere_login' => true
             ]);
         }
@@ -53,6 +63,61 @@ try {
         $input = file_get_contents('php://input');
         $data = json_decode($input, true);
         
+        $accion = isset($data['accion']) ? $data['accion'] : 'crear';
+        
+        // ============================================
+        // CANCELAR RESERVACIÓN 
+        // ============================================
+        if($accion === 'cancelar') {
+            $reservacionId = isset($data['id']) ? intval($data['id']) : 0;
+            
+            if($reservacionId <= 0) {
+                responderJSON(['success' => false, 'message' => 'ID de reservación inválido']);
+            }
+            
+            try {
+                // Verificar que la reservación pertenezca al usuario
+                $sqlVerificar = "SELECT id FROM reservaciones 
+                                WHERE id = $reservacionId 
+                                AND usuario_id = $usuarioId";
+                
+                $resultado = $conexion->query($sqlVerificar);
+                
+                if(!$resultado || $resultado->num_rows === 0) {
+                    responderJSON([
+                        'success' => false, 
+                        'message' => 'Reservación no encontrada o no tienes permiso para cancelarla'
+                    ]);
+                }
+                
+                // Eliminar la reservación
+                $sqlEliminar = "DELETE FROM reservaciones 
+                               WHERE id = $reservacionId 
+                               AND usuario_id = $usuarioId";
+                
+                if($conexion->query($sqlEliminar)) {
+                    responderJSON([
+                        'success' => true,
+                        'message' => 'Reservación cancelada exitosamente'
+                    ]);
+                } else {
+                    responderJSON([
+                        'success' => false,
+                        'message' => 'Error al cancelar la reservación'
+                    ]);
+                }
+                
+            } catch(Exception $e) {
+                responderJSON([
+                    'success' => false,
+                    'message' => 'Error al procesar la cancelación'
+                ]);
+            }
+        }
+        
+        // ============================================
+        // CREAR RESERVACIÓN
+        // ============================================
         $propiedadId = isset($data['propiedad_id']) ? intval($data['propiedad_id']) : 0;
         $fechaInicio = isset($data['fecha_inicio']) ? trim($data['fecha_inicio']) : '';
         $fechaFin = isset($data['fecha_fin']) ? trim($data['fecha_fin']) : '';
@@ -194,7 +259,7 @@ try {
     }
     
     // ============================================
-    // OBTENER MIS RESERVACIONES (GET)
+    // OBTENER MIS RESERVACIONES
     // ============================================
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         
@@ -259,6 +324,70 @@ try {
             responderJSON([
                 'success' => false,
                 'message' => 'Error al obtener reservaciones'
+            ]);
+        }
+    }
+    
+    // ============================================
+    // ELIMINAR RESERVACIÓN 
+    // ============================================
+    if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+        
+        if(!isset($_SESSION['user_id'])) {
+            responderJSON([
+                'success' => false,
+                'message' => 'Debes iniciar sesión'
+            ]);
+        }
+        
+        $usuarioId = $_SESSION['user_id'];
+        
+        // Obtener datos del DELETE
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        
+        $reservacionId = isset($data['id']) ? intval($data['id']) : 0;
+        
+        if($reservacionId <= 0) {
+            responderJSON(['success' => false, 'message' => 'ID de reservación inválido']);
+        }
+        
+        try {
+            // Verificar que la reservación pertenezca al usuario
+            $sqlVerificar = "SELECT id FROM reservaciones 
+                            WHERE id = $reservacionId 
+                            AND usuario_id = $usuarioId";
+            
+            $resultado = $conexion->query($sqlVerificar);
+            
+            if(!$resultado || $resultado->num_rows === 0) {
+                responderJSON([
+                    'success' => false, 
+                    'message' => 'Reservación no encontrada o no tienes permiso para cancelarla'
+                ]);
+            }
+            
+            // Eliminar la reservación
+            $sqlEliminar = "DELETE FROM reservaciones 
+                           WHERE id = $reservacionId 
+                           AND usuario_id = $usuarioId";
+            
+            if($conexion->query($sqlEliminar)) {
+                responderJSON([
+                    'success' => true,
+                    'message' => 'Reservación cancelada exitosamente'
+                ]);
+            } else {
+                responderJSON([
+                    'success' => false,
+                    'message' => 'Error al cancelar la reservación'
+                ]);
+            }
+            
+        } catch(Exception $e) {
+            responderJSON([
+                'success' => false,
+                'message' => 'Error al procesar la cancelación'
             ]);
         }
     }

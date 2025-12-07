@@ -1,4 +1,4 @@
-// CONFIGURACIÓN GENERAL
+
 const API_URL = '../app/AuthController.php';
 
 // =======================================================================

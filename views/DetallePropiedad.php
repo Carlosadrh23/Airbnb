@@ -1,4 +1,4 @@
-<<?php
+<?php
 session_start();
 
 $propiedadId = isset($_GET['id']) ? intval($_GET['id']) : 0;
@@ -15,6 +15,7 @@ if ($propiedadId <= 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HomeAway - Detalle de Propiedad</title>
     <link rel="stylesheet" href="../assets/styles.css">
+    <link rel="stylesheet" href="../assets/styles2.css">
 </head>
 <body class="pagina-principal">
   
@@ -76,6 +77,22 @@ if ($propiedadId <= 0) {
                 <div class="noches-modal" id="nochesModal">por noche</div>
             </div>
 
+            <div class="info-reserva" id="infoReserva" style="display: none; padding: 12px; background: #f7f7f7; border-radius: 8px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Noches seleccionadas:</span>
+                    <strong id="nochesSeleccionadas">0</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span>Precio por noche:</span>
+                    <strong id="precioPorNoche">$0</strong>
+                </div>
+                <hr style="margin: 8px 0; border: none; border-top: 1px solid #ddd;">
+                <div style="display: flex; justify-content: space-between;">
+                    <strong>Total:</strong>
+                    <strong id="precioTotal" style="color: #FF385C;">$0</strong>
+                </div>
+            </div>
+
             <div class="fila-fechas">
                 <div class="campo-fecha">
                     <label class="label-fecha">Llegada</label>
@@ -99,6 +116,167 @@ if ($propiedadId <= 0) {
             <button class="boton-verificar" onclick="confirmarReservacion()" id="btnConfirmar">
                 Continuar
             </button>
+        </div>
+    </div>
+
+    <!-- Modal de Amenidades -->
+    <div class="modal-overlay" id="modalAmenidades" onclick="cerrarModalSiClickFuera(event)">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">Lo que ofrece este lugar</h2>
+                <button class="btn-cerrar" onclick="cerrarModalAmenidades()">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="amenidades-grid">
+                    <!-- Baño -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 6a3 3 0 1 0 6 0"></path>
+                            <path d="M12 3v3"></path>
+                            <path d="M3 13h18"></path>
+                            <path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"></path>
+                        </svg>
+                        <span class="amenidad-texto">Baño</span>
+                    </div>
+
+                    <!-- Ventiladores -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 2v3"></path>
+                            <path d="M12 19v3"></path>
+                            <path d="M4.22 4.22l2.12 2.12"></path>
+                            <path d="M17.66 17.66l2.12 2.12"></path>
+                            <path d="M2 12h3"></path>
+                            <path d="M19 12h3"></path>
+                            <path d="M4.22 19.78l2.12-2.12"></path>
+                            <path d="M17.66 6.34l2.12-2.12"></path>
+                        </svg>
+                        <span class="amenidad-texto">Ventiladores</span>
+                    </div>
+
+                    <!-- Productos de limpieza -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18"></path>
+                            <path d="M6 6l12 12"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span class="amenidad-texto">Productos de limpieza</span>
+                    </div>
+
+                    <!-- Cerradura en la puerta -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <span class="amenidad-texto">Cerradura en la puerta</span>
+                    </div>
+
+                    <!-- Agua caliente -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                        </svg>
+                        <span class="amenidad-texto">Agua caliente</span>
+                    </div>
+
+                    <!-- Wifi -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                        </svg>
+                        <span class="amenidad-texto">Wifi</span>
+                    </div>
+
+                    <!-- Lavadora -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <circle cx="12" cy="13" r="5"></circle>
+                            <circle cx="12" cy="13" r="2"></circle>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                        <span class="amenidad-texto">Lavadora</span>
+                    </div>
+
+                    <!-- Cocina -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 3h18v4H3z"></path>
+                            <path d="M3 7v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V7"></path>
+                            <circle cx="9" cy="13" r="2"></circle>
+                        </svg>
+                        <span class="amenidad-texto">Cocina</span>
+                    </div>
+
+                    <!-- Plancha -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 3h6l3 8H6l3-8z"></path>
+                            <path d="M6 11v7a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3v-7"></path>
+                        </svg>
+                        <span class="amenidad-texto">Plancha</span>
+                    </div>
+
+                    <!-- Comedor -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="8" width="18" height="4" rx="1"></rect>
+                            <path d="M4 12v7a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-7"></path>
+                            <path d="M16 12v7a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-7"></path>
+                        </svg>
+                        <span class="amenidad-texto">Comedor</span>
+                    </div>
+
+                    <!-- Closet -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                            <line x1="12" y1="3" x2="12" y2="21"></line>
+                            <line x1="9" y1="12" x2="9.01" y2="12"></line>
+                            <line x1="15" y1="12" x2="15.01" y2="12"></line>
+                        </svg>
+                        <span class="amenidad-texto">Closet</span>
+                    </div>
+
+                    <!-- Refrigerador -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                            <line x1="4" y1="10" x2="20" y2="10"></line>
+                            <line x1="10" y1="5" x2="10" y2="7"></line>
+                            <line x1="10" y1="13" x2="10" y2="16"></line>
+                        </svg>
+                        <span class="amenidad-texto">Refrigerador</span>
+                    </div>
+
+                    <!-- TV -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect>
+                            <polyline points="17 2 12 7 7 2"></polyline>
+                        </svg>
+                        <span class="amenidad-texto">TV</span>
+                    </div>
+
+                    <!-- Muebles exteriores -->
+                    <div class="amenidad-item">
+                        <svg class="amenidad-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 9v10"></path>
+                            <path d="M20 9v10"></path>
+                            <path d="M4 9h16"></path>
+                            <path d="M6 9V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v3"></path>
+                        </svg>
+                        <span class="amenidad-texto">Muebles exteriores</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -153,16 +331,19 @@ if ($propiedadId <= 0) {
         
         function mostrarDetalle(propiedad) {
             const imagenUrl = propiedad.imagen_url 
-                 '../assets/img/propiedades/' + propiedad.imagen_url 
-                 '../assets/img/placeholder.png';
+                ? '../assets/img/propiedades/' + propiedad.imagen_url 
+                : '../assets/img/placeholder.png';
             
             const precioFormateado = parseFloat(propiedad.precio_noche).toLocaleString('es-MX');
             const numeroNoches = propiedad.numero_noches || 1;
             const textoNoches = numeroNoches === 1 ? 'noche' : 'noches';
             
+            console.log('URL de imagen:', imagenUrl);
+            console.log('Datos de propiedad:', propiedad);
+            
             // Actualizar modal
             document.getElementById('precioModal').textContent = '$' + precioFormateado + ' MXN';
-            document.getElementById('nochesModal').textContent = 'por ' + numeroNoches + ' ' + textoNoches + ' mínimo';
+            document.getElementById('nochesModal').textContent = 'por noche (mínimo ' + numeroNoches + ' ' + textoNoches + ')';
             
             const html = `
                 <h1>${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h1>
@@ -170,7 +351,10 @@ if ($propiedadId <= 0) {
                 <div class="propiedades">
                     <div class="condominio">
                         <div class="contenedor-img">
-                            <img src="${imagenUrl}" alt="${propiedad.tipo_alojamiento} en ${propiedad.ciudad}" class="img-condominio">
+                            <img src="${imagenUrl}" 
+                                 alt="${propiedad.tipo_alojamiento} en ${propiedad.ciudad}" 
+                                 class="img-condominio"
+                                 onerror="this.src='../assets/img/placeholder.png'; console.error('Error cargando imagen:', '${imagenUrl}');">
                         </div>
                         <div class="info-condominio">
                             <h3 class="titulo-condominio">${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h3>
@@ -181,6 +365,10 @@ if ($propiedadId <= 0) {
                                 <h4>Descripción:</h4>
                                 <p>${propiedad.descripcion}</p>
                             </div>
+                            
+                            <button class="btn-ver-detalles" onclick="abrirModalAmenidades()" style="margin: 20px 0; padding: 12px 24px; background: #5B8A8F; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                                Incluye
+                            </button>
                             
                             <p class="precio">$${precioFormateado} MXN <span class="noches">por ${numeroNoches} ${textoNoches}</span></p>
                             <div class="rating">
@@ -225,7 +413,48 @@ if ($propiedadId <= 0) {
             document.getElementById('btnMenos').disabled = numHuespedes === 0;
         }
 
-        //  Redirige a página de pago en lugar de reservar directamente
+        function calcularTotal() {
+            const fechaLlegada = document.getElementById('fechaLlegada').value;
+            const fechaSalida = document.getElementById('fechaSalida').value;
+            
+            if (!fechaLlegada || !fechaSalida || !propiedadActual) {
+                document.getElementById('infoReserva').style.display = 'none';
+                return;
+            }
+
+            const fecha1 = new Date(fechaLlegada);
+            const fecha2 = new Date(fechaSalida);
+            const diffTime = Math.abs(fecha2 - fecha1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays > 0) {
+                const precioNoche = parseFloat(propiedadActual.precio_noche);
+                const total = precioNoche * diffDays;
+                const nochesMinimas = propiedadActual.numero_noches || 1;
+
+                document.getElementById('nochesSeleccionadas').textContent = diffDays + (diffDays === 1 ? ' noche' : ' noches');
+                document.getElementById('precioPorNoche').textContent = '$' + precioNoche.toLocaleString('es-MX') + ' MXN';
+                document.getElementById('precioTotal').textContent = '$' + total.toLocaleString('es-MX') + ' MXN';
+                document.getElementById('infoReserva').style.display = 'block';
+
+                // Mostrar advertencia si no cumple con mínimo de noches
+                const btnConfirmar = document.getElementById('btnConfirmar');
+                if (diffDays < nochesMinimas) {
+                    btnConfirmar.style.background = '#ccc';
+                    btnConfirmar.style.cursor = 'not-allowed';
+                    btnConfirmar.disabled = true;
+                    btnConfirmar.textContent = `Mínimo ${nochesMinimas} ${nochesMinimas === 1 ? 'noche' : 'noches'}`;
+                } else {
+                    btnConfirmar.style.background = '';
+                    btnConfirmar.style.cursor = 'pointer';
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.textContent = 'Continuar';
+                }
+            } else {
+                document.getElementById('infoReserva').style.display = 'none';
+            }
+        }
+
         async function confirmarReservacion() {
             const fechaLlegada = document.getElementById('fechaLlegada').value;
             const fechaSalida = document.getElementById('fechaSalida').value;
@@ -239,13 +468,24 @@ if ($propiedadId <= 0) {
                 alert('Por favor indica el número de huéspedes');
                 return;
             }
+
+            // Validar mínimo de noches
+            const fecha1 = new Date(fechaLlegada);
+            const fecha2 = new Date(fechaSalida);
+            const diffTime = Math.abs(fecha2 - fecha1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const nochesMinimas = propiedadActual.numero_noches || 1;
+
+            if (diffDays < nochesMinimas) {
+                alert(`Esta propiedad requiere un mínimo de ${nochesMinimas} ${nochesMinimas === 1 ? 'noche' : 'noches'}`);
+                return;
+            }
             
             // Verificar si el usuario está logueado
             const logueado = await verificarSesion();
             
             if (!logueado) {
                 if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
-                    // Guardar datos para después del login
                     sessionStorage.setItem('reserva_pendiente', JSON.stringify({
                         propiedad_id: propiedadId,
                         fecha_inicio: fechaLlegada,
@@ -257,11 +497,26 @@ if ($propiedadId <= 0) {
                 return;
             }
             
-            // C Redirige a la página de confirmación y pago
             window.location.href = `ConfirmarYPagar.php?propiedad_id=${propiedadId}&fecha_inicio=${fechaLlegada}&fecha_fin=${fechaSalida}&num_huespedes=${numHuespedes}`;
         }
 
-        // Actualizar fecha mínima de salida cuando cambia la llegada
+        // Funciones para modal de amenidades
+        function abrirModalAmenidades() {
+            document.getElementById('modalAmenidades').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalAmenidades() {
+            document.getElementById('modalAmenidades').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function cerrarModalSiClickFuera(event) {
+            if (event.target.id === 'modalAmenidades') {
+                cerrarModalAmenidades();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async function() {
             await verificarSesion();
             await cargarDetallePropiedad();
@@ -272,23 +527,27 @@ if ($propiedadId <= 0) {
                     const fecha = new Date(fechaLlegada);
                     fecha.setDate(fecha.getDate() + 1);
                     document.getElementById('fechaSalida').min = fecha.toISOString().split('T')[0];
+                    calcularTotal();
                 }
             });
 
-            // Cerrar modal con ESC
+            document.getElementById('fechaSalida').addEventListener('change', calcularTotal);
+
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && document.getElementById('modalReserva').classList.contains('active')) {
-                    cerrarModalReserva();
+                if (e.key === 'Escape') {
+                    if (document.getElementById('modalReserva').classList.contains('active')) {
+                        cerrarModalReserva();
+                    }
+                    if (document.getElementById('modalAmenidades').classList.contains('active')) {
+                        cerrarModalAmenidades();
+                    }
                 }
             });
             
-            //  Verificar si hay reserva pendiente (después de login)
             const reservaPendiente = sessionStorage.getItem('reserva_pendiente');
             if (reservaPendiente) {
                 const datos = JSON.parse(reservaPendiente);
                 sessionStorage.removeItem('reserva_pendiente');
-                
-                // Redirigir a la página de pago
                 window.location.href = `ConfirmarYPagar.php?propiedad_id=${datos.propiedad_id}&fecha_inicio=${datos.fecha_inicio}&fecha_fin=${datos.fecha_fin}&num_huespedes=${datos.num_huespedes}`;
             }
         });

@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HomeAway - Búsqueda de Alojamientos</title>
+    <title>HomeAway - Departamento Guadalajara</title>
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body class="pagina-principal">
   
    <header class="header">
-    <img src="../assets/img/Logo_azul.png" alt="Logo" class="logo">
+    <a href="index.php">
+        <img src="../assets/img/Logo_azul.png" alt="Logo" class="logo">
+    </a>
     
     <div class="menu-container">
-        <!-- Ícono de usuario -->
         <div class="icono-usuario" id="iconoUsuario" style="display: none;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -20,8 +21,6 @@
             </svg>
         </div>
         
-        
-        <!-- Menú hamburguesa  -->
         <div class="menu-hamburguesa">
             <button class="boton-menu">
                 <span class="linea"></span>
@@ -29,22 +28,20 @@
                 <span class="linea"></span>
             </button>
             
-            <!-- Menú sin sesión -->
             <div class="dropdown-menu" id="menuSinSesion">
                 <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
-                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviértete en anfitrión</a>
             </div>
             
-            <!-- Menú con sesión  -->
             <div class="dropdown-menu" id="menuConSesion" style="display: none;">
                 <div class="user-info-menu">
                     <strong id="nombreUsuarioMenu">Usuario</strong>
                     <small id="emailUsuarioMenu">email@ejemplo.com</small>
                 </div>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
-                <a href="#" class="menu-item">Mi perfil</a>
-                <a href="#" class="menu-item">Conviertete en anfitrión</a>
-                <a href="CerrarSesion.html" class="menu-item">Cerrar sesión</a>
+                <a href="Perfil.html" class="menu-item">Mi perfil</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviértete en anfitrión</a>
+                <a href="CerrarSesion.php" class="menu-item">Cerrar sesión</a>
             </div>
         </div>
     </div>
@@ -74,27 +71,174 @@
         </button>
     </div>
 
-    <h1>Condominio en Guadalajara</h1>
+    <h1>Departamento en Guadalajara</h1>
 
    <div class="propiedades">
-    
-
-    <!-- Departamento Guadalajara -->
     <div class="depa-gdl">
         <div class="contenedor-img">
             <img src="../assets/img/depa_gdl.png" alt="Departamento en Guadalajara" class="img-depa-gdl">
         </div>
         <div class="info-depa-gdl">
             <h3 class="titulo-depa-gdl">Departamento en Guadalajara</h3>
-            <p class="precio">$2900 MXN <span class="noches">por 2 noches</span></p>
+            <p class="precio">$2,900 MXN <span class="noches">por 2 noches</span></p>
             <div class="rating">
                 <span class="estrella">★</span>
-                <span class="valor-rating">4,89</span>
+                <span class="valor-rating">4.89</span>
             </div>
         </div>
     </div>
+</div>
 
-   
-       <script src="../assets/javascript/main.js"></script>
+    <!-- Botón de Reservar -->
+    <button class="boton-reservar-fijo" onclick="abrirModalReserva()">
+        Reservar
+    </button>
+
+    <!-- Modal de Reservación -->
+    <div class="modal-reserva" id="modalReserva" onclick="cerrarModalSiFueraClick(event)">
+        <div class="modal-contenido">
+            <button class="boton-cerrar" onclick="cerrarModalReserva()">×</button>
+            
+            <div class="modal-header">
+                <div class="precio-modal">$2,900 MXN</div>
+                <div class="noches-modal">por noche</div>
+            </div>
+
+            <div class="fila-fechas">
+                <div class="campo-fecha">
+                    <label class="label-fecha">Llegada</label>
+                    <input type="date" class="input-fecha" id="fechaLlegada" placeholder="Agregar fecha">
+                </div>
+                <div class="campo-fecha">
+                    <label class="label-fecha">Salida</label>
+                    <input type="date" class="input-fecha" id="fechaSalida" placeholder="Agregar fecha">
+                </div>
+            </div>
+
+            <div class="campo-huespedes">
+                <label class="label-huespedes">Huéspedes</label>
+                <div class="contador-huespedes">
+                    <button class="boton-contador" onclick="cambiarHuespedes(-1)" id="btnMenos" disabled>-</button>
+                    <span class="numero-huespedes" id="numHuespedes">0</span>
+                    <button class="boton-contador" onclick="cambiarHuespedes(1)">+</button>
+                </div>
+            </div>
+
+            <button class="boton-verificar" onclick="verificarDisponibilidad()">
+                Verificar disponibilidad
+            </button>
+        </div>
+    </div>
+
+    <script src="../assets/javascript/main.js"></script>
+    <script>
+        let numHuespedes = 0;
+        let usuarioLogueado = false;
+        const PROPIEDAD_ID = 2; // ID para Guadalajara
+
+        async function verificarSesion() {
+            try {
+                const response = await fetch('../app/AuthController.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ accion: 'verificar_sesion' })
+                });
+                
+                const resultado = await response.json();
+                usuarioLogueado = resultado.logueado || false;
+                return usuarioLogueado;
+            } catch (error) {
+                console.error('Error verificando sesión:', error);
+                return false;
+            }
+        }
+
+        function abrirModalReserva() {
+            document.getElementById('modalReserva').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalReserva() {
+            document.getElementById('modalReserva').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function cerrarModalSiFueraClick(event) {
+            if (event.target.id === 'modalReserva') {
+                cerrarModalReserva();
+            }
+        }
+
+        function cambiarHuespedes(cambio) {
+            numHuespedes += cambio;
+            if (numHuespedes < 0) numHuespedes = 0;
+            
+            document.getElementById('numHuespedes').textContent = numHuespedes;
+            document.getElementById('btnMenos').disabled = numHuespedes === 0;
+        }
+
+        async function verificarDisponibilidad() {
+            const fechaLlegada = document.getElementById('fechaLlegada').value;
+            const fechaSalida = document.getElementById('fechaSalida').value;
+            
+            if (!fechaLlegada || !fechaSalida) {
+                alert('Por favor selecciona las fechas de llegada y salida');
+                return;
+            }
+
+            if (numHuespedes === 0) {
+                alert('Por favor indica el número de huéspedes');
+                return;
+            }
+            
+            const logueado = await verificarSesion();
+            
+            if (!logueado) {
+                if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
+                    sessionStorage.setItem('reserva_pendiente', JSON.stringify({
+                        propiedad_id: PROPIEDAD_ID,
+                        fecha_inicio: fechaLlegada,
+                        fecha_fin: fechaSalida,
+                        num_huespedes: numHuespedes
+                    }));
+                    window.location.href = 'Login.html';
+                }
+                return;
+            }
+            
+            window.location.href = `ConfirmarYPagar.php?propiedad_id=${PROPIEDAD_ID}&fecha_inicio=${fechaLlegada}&fecha_fin=${fechaSalida}&num_huespedes=${numHuespedes}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            await verificarSesion();
+            
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('fechaLlegada').min = hoy;
+            document.getElementById('fechaSalida').min = hoy;
+            
+            document.getElementById('fechaLlegada').addEventListener('change', function() {
+                const fechaLlegada = this.value;
+                if (fechaLlegada) {
+                    const fecha = new Date(fechaLlegada);
+                    fecha.setDate(fecha.getDate() + 1);
+                    document.getElementById('fechaSalida').min = fecha.toISOString().split('T')[0];
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('modalReserva').classList.contains('active')) {
+                    cerrarModalReserva();
+                }
+            });
+            
+            const reservaPendiente = sessionStorage.getItem('reserva_pendiente');
+            if (reservaPendiente) {
+                const datos = JSON.parse(reservaPendiente);
+                sessionStorage.removeItem('reserva_pendiente');
+                window.location.href = `ConfirmarYPagar.php?propiedad_id=${datos.propiedad_id}&fecha_inicio=${datos.fecha_inicio}&fecha_fin=${datos.fecha_fin}&num_huespedes=${datos.num_huespedes}`;
+            }
+        });
+    </script>
 </body>
 </html>

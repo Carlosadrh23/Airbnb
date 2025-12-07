@@ -7,38 +7,38 @@
     <link rel="stylesheet" href="../assets/styles.css">
 </head>
 <body class="pagina-auth">
-    <div class="contenedor-principal">
-        <!-- Sección Izquierda - Login -->
-        <div class="seccion-izquierda">
-            <div class="logo-container">
-                <img src="../assets/img/Logo_azul.png" alt="HomeAway Logo" class="logo-login">
+    <div class="contenedor-auth">
+        <!-- Panel Formulario (Izquierda) -->
+        <div class="panel-formulario">
+            <div class="logo-auth">
+                <img src="../assets/img/Logo_azul.png" alt="HomeAway Logo">
             </div>
 
-            <div class="formulario-login">
-                <h1 class="titulo-login">Iniciar sesión</h1>
+            <div class="card-formulario">
+                <h1 class="titulo-auth">Iniciar sesión</h1>
 
-                <form class="form-login" id="formLogin">
-                    <div class="grupo-input">
-                        <label for="email" class="label-input">Correo electrónico:</label>
-                        <input type="email" id="email" name="email" class="input-field" required>
+                <form class="formulario-auth" id="formLogin">
+                    <div class="campo-auth">
+                        <label for="email" class="label-auth">Correo electrónico:</label>
+                        <input type="email" id="email" name="email" class="input-auth" required>
                     </div>
 
-                    <div class="grupo-input">
-                        <label for="password" class="label-input">Contraseña:</label>
-                        <input type="password" id="password" name="password" class="input-field" required>
+                    <div class="campo-auth">
+                        <label for="password" class="label-auth">Contraseña:</label>
+                        <input type="password" id="password" name="password" class="input-auth" required>
                     </div>
 
-                    <button type="submit" class="boton-login">Iniciar sesión</button>
+                    <button type="submit" class="btn-submit-auth">Iniciar sesión</button>
                 </form>
             </div>
         </div>
 
-        
-        <div class="seccion-derecha">
-            <div class="contenido-registro">
-                <h2 class="titulo-registro">¿No tienes cuenta?</h2>
-                <p class="texto-registro">Regístrate para disfrutar de los mejores viajes por parte de nosotros</p>
-                <button class="boton-registro" onclick="window.location.href='Registro.html'">Registrarse</button>
+        <!-- Panel CTA (Derecha) -->
+        <div class="panel-cta">
+            <div class="contenido-cta">
+                <h2 class="titulo-cta">¿No tienes cuenta?</h2>
+                <p class="texto-cta">Regístrate para disfrutar de los mejores viajes por parte de nosotros</p>
+                <button class="btn-cta" onclick="window.location.href='Registro.html'">Registrarse</button>
             </div>
         </div>
     </div>

@@ -12,7 +12,7 @@
     <img src="../assets/img/Logo_azul.png" alt="Logo" class="logo">
     
     <div class="menu-container">
-        <!-- Ícono de usuario -->
+        <!-- Ícono de usuario (solo visible si hay sesión) -->
         <div class="icono-usuario" id="iconoUsuario" style="display: none;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -32,7 +32,7 @@
             <!-- Menú sin sesión -->
             <div class="dropdown-menu" id="menuSinSesion">
                 <a href="Login.html" class="menu-item">Iniciar sesión / Registrarse</a>
-                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviertete en anfitrión</a>
             </div>
             
             <!-- Menú con sesión  -->
@@ -42,8 +42,8 @@
                     <small id="emailUsuarioMenu">email@ejemplo.com</small>
                 </div>
                 <hr style="margin: 8px 0; border: none; border-top: 1px solid #EBEBEB;">
-                <a href="#" class="menu-item">Mi perfil</a>
-                <a href="#" class="menu-item">Conviertete en anfitrión</a>
+                <a href="Perfil.html" class="menu-item">Mi perfil</a>
+                <a href="Anfitrion1.html" class="menu-item">Conviertete en anfitrión</a>
                 <a href="CerrarSesion.html" class="menu-item">Cerrar sesión</a>
             </div>
         </div>
@@ -80,17 +80,19 @@
 
     <!-- Departamento La Paz -->
     <div class="depa-lapaz">
-        <div class="contenedor-img">
-            <img src="../assets/img/depa_lapaz.png" alt="Departamento en La Paz BCS" class="img-depa-lapaz">
-        </div>
-        <div class="info-depa-lapaz">
-            <h3 class="titulo-depa-lapaz">Departamento en La Paz BCS</h3>
-            <p class="precio">$3400 MXN <span class="noches">por 1 noches</span></p>
-            <div class="rating">
-                <span class="estrella">★</span>
-                <span class="valor-rating">3,65</span>
+        <a href="ConfirmarPago.html">
+            <div class="contenedor-img">
+                <img src="../assets/img/depa_lapaz.png" alt="Departamento en La Paz BCS" class="img-depa-lapaz" style="width: 300px;">
             </div>
-        </div>
+            <div class="info-depa-lapaz">
+                <h3 class="titulo-depa-lapaz">Departamento en La Paz BCS</h3>
+                <p class="precio">$3400 MXN <span class="noches">por 1 noches</span></p>
+                <div class="rating">
+                    <span class="estrella">★</span>
+                    <span class="valor-rating">3.65</span>
+                </div>
+            </div>
+        </a>
     </div>
 
     
