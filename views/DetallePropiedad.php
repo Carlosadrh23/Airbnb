@@ -389,7 +389,20 @@ if ($propiedadId <= 0) {
             document.getElementById('fechaSalida').min = hoy;
         }
         
-        function abrirModalReserva() {
+        async function abrirModalReserva() {
+            // Verificar si el usuario está logueado
+            const logueado = await verificarSesion();
+            
+            if (!logueado) {
+                if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
+                    // Guardar la propiedad actual para regresar después del login
+                    sessionStorage.setItem('regresar_propiedad', propiedadId);
+                    window.location.href = 'Login.html';
+                }
+                return;
+            }
+            
+            // Si está logueado, abrir el modal normalmente
             document.getElementById('modalReserva').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
@@ -549,6 +562,17 @@ if ($propiedadId <= 0) {
                 const datos = JSON.parse(reservaPendiente);
                 sessionStorage.removeItem('reserva_pendiente');
                 window.location.href = `ConfirmarYPagar.php?propiedad_id=${datos.propiedad_id}&fecha_inicio=${datos.fecha_inicio}&fecha_fin=${datos.fecha_fin}&num_huespedes=${datos.num_huespedes}`;
+            }
+            
+            // Verificar si regresó después de iniciar sesión
+            const regresarPropiedad = sessionStorage.getItem('regresar_propiedad');
+            if (regresarPropiedad && usuarioLogueado) {
+                sessionStorage.removeItem('regresar_propiedad');
+                // Abrir el modal automáticamente
+                setTimeout(() => {
+                    document.getElementById('modalReserva').classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }, 500);
             }
         });
     </script>
