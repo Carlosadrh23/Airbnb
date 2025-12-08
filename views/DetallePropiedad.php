@@ -281,300 +281,333 @@ if ($propiedadId <= 0) {
     </div>
 
     <script src="../assets/javascript/main.js"></script>
-    <script>
-        const propiedadId = <?php echo $propiedadId; ?>;
-        let propiedadActual = null;
-        let numHuespedes = 0;
-        let usuarioLogueado = false;
+     <script>
+    const propiedadId = <?php echo $propiedadId; ?>;
+let propiedadActual = null;
+let numHuespedes = 0;
+let usuarioLogueado = false;
+
+// ÚNICA FUNCIÓN para verificar sesión Y actualizar interfaz
+async function verificarSesionYActualizarMenu() {
+    try {
+        const response = await fetch('../app/AuthController.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ accion: 'verificar_sesion' })
+        });
         
-        // Verificar si hay sesión activa
-        async function verificarSesion() {
-            try {
-                const response = await fetch('../app/AuthController.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ accion: 'verificar_sesion' })
-                });
-                
-                const resultado = await response.json();
-                usuarioLogueado = resultado.logueado || false;
-                return usuarioLogueado;
-            } catch (error) {
-                console.error('Error verificando sesión:', error);
-                return false;
-            }
+        const resultado = await response.json();
+        usuarioLogueado = resultado.logueado || false;
+        
+        // Actualizar interfaz del menú
+        const iconoUsuario = document.getElementById('iconoUsuario');
+        const menuSinSesion = document.getElementById('menuSinSesion');
+        const menuConSesion = document.getElementById('menuConSesion');
+        const nombreUsuarioMenu = document.getElementById('nombreUsuarioMenu');
+        const emailUsuarioMenu = document.getElementById('emailUsuarioMenu');
+
+        if (resultado.logueado && resultado.usuario) {
+            console.log(' Usuario logueado:', resultado.usuario.nombre);
+            
+            // Mostrar icono de usuario y menú con sesión
+            if (iconoUsuario) iconoUsuario.style.display = 'flex';
+            if (menuSinSesion) menuSinSesion.style.display = 'none';
+            if (menuConSesion) menuConSesion.style.display = 'block';
+            
+            // Actualizar nombre y email
+            if (nombreUsuarioMenu) nombreUsuarioMenu.textContent = resultado.usuario.nombre;
+            if (emailUsuarioMenu) emailUsuarioMenu.textContent = resultado.usuario.email;
+        } else {
+            console.log(' Sin sesión activa');
+            
+            // Mostrar menú sin sesión
+            if (iconoUsuario) iconoUsuario.style.display = 'none';
+            if (menuSinSesion) menuSinSesion.style.display = 'block';
+            if (menuConSesion) menuConSesion.style.display = 'none';
         }
         
-        // Cargar detalle de la propiedad
-        async function cargarDetallePropiedad() {
-            try {
-                const response = await fetch('../app/AnfitrionController.php?id=' + propiedadId, {
-                    method: 'GET',
-                    credentials: 'include'
-                });
-                
-                const resultado = await response.json();
-                
-                if (resultado.success && resultado.propiedad) {
-                    propiedadActual = resultado.propiedad;
-                    mostrarDetalle(resultado.propiedad);
-                    document.getElementById('btnReservar').style.display = 'block';
-                } else {
-                    document.getElementById('contenedorDetalle').innerHTML = '<div class="error">Propiedad no encontrada</div>';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('contenedorDetalle').innerHTML = '<div class="error">Error al cargar la propiedad</div>';
-            }
-        }
+        return usuarioLogueado;
+    } catch (error) {
+        console.error('Error verificando sesión:', error);
+        return false;
+    }
+}
+
+// Cargar detalle de la propiedad
+async function cargarDetallePropiedad() {
+    try {
+        const response = await fetch('../app/AnfitrionController.php?id=' + propiedadId, {
+            method: 'GET',
+            credentials: 'include'
+        });
         
-        function mostrarDetalle(propiedad) {
-            const imagenUrl = propiedad.imagen_url 
-                ? '../assets/img/propiedades/' + propiedad.imagen_url 
-                : '../assets/img/placeholder.png';
-            
-            const precioFormateado = parseFloat(propiedad.precio_noche).toLocaleString('es-MX');
-            const numeroNoches = propiedad.numero_noches || 1;
-            const textoNoches = numeroNoches === 1 ? 'noche' : 'noches';
-            
-            console.log('URL de imagen:', imagenUrl);
-            console.log('Datos de propiedad:', propiedad);
-            
-            // Actualizar modal
-            document.getElementById('precioModal').textContent = '$' + precioFormateado + ' MXN';
-            document.getElementById('nochesModal').textContent = 'por noche (mínimo ' + numeroNoches + ' ' + textoNoches + ')';
-            
-            const html = `
-                <h1>${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h1>
-                
-                <div class="propiedades">
-                    <div class="condominio">
-                        <div class="contenedor-img">
-                            <img src="${imagenUrl}" 
-                                 alt="${propiedad.tipo_alojamiento} en ${propiedad.ciudad}" 
-                                 class="img-condominio"
-                                 onerror="this.src='../assets/img/placeholder.png'; console.error('Error cargando imagen:', '${imagenUrl}');">
-                        </div>
-                        <div class="info-condominio">
-                            <h3 class="titulo-condominio">${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h3>
-                            <p class="descripcion-detalle">${propiedad.direccion}</p>
-                            <p class="descripcion-detalle">${propiedad.ciudad}, ${propiedad.estado}</p>
-                            
-                            <div class="descripcion-propiedad">
-                                <h4>Descripción:</h4>
-                                <p>${propiedad.descripcion}</p>
-                            </div>
-                            
-                            <button class="btn-ver-detalles" onclick="abrirModalAmenidades()" style="margin: 20px 0; padding: 12px 24px; background: #5B8A8F; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
-                                Incluye
-                            </button>
-                            
-                            <p class="precio">$${precioFormateado} MXN <span class="noches">por ${numeroNoches} ${textoNoches}</span></p>
-                            <div class="rating">
-                                <span class="estrella">★</span>
-                                <span class="valor-rating">5.0</span>
-                            </div>
-                            <p class="anfitrion-info">Anfitrión: ${propiedad.nombre_anfitrion}</p>
-                        </div>
-                    </div>
+        const resultado = await response.json();
+        
+        if (resultado.success && resultado.propiedad) {
+            propiedadActual = resultado.propiedad;
+            mostrarDetalle(resultado.propiedad);
+            document.getElementById('btnReservar').style.display = 'block';
+        } else {
+            document.getElementById('contenedorDetalle').innerHTML = '<div class="error">Propiedad no encontrada</div>';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('contenedorDetalle').innerHTML = '<div class="error">Error al cargar la propiedad</div>';
+    }
+}
+
+function mostrarDetalle(propiedad) {
+    const imagenUrl = propiedad.imagen_url 
+        ? '../assets/img/propiedades/' + propiedad.imagen_url 
+        : '../assets/img/placeholder.png';
+    
+    const precioFormateado = parseFloat(propiedad.precio_noche).toLocaleString('es-MX');
+    const numeroNoches = propiedad.numero_noches || 1;
+    const textoNoches = numeroNoches === 1 ? 'noche' : 'noches';
+    
+    // Actualizar modal
+    document.getElementById('precioModal').textContent = '$' + precioFormateado + ' MXN';
+    document.getElementById('nochesModal').textContent = 'por noche (mínimo ' + numeroNoches + ' ' + textoNoches + ')';
+    
+    const html = `
+        <h1>${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h1>
+        
+        <div class="propiedades">
+            <div class="condominio">
+                <div class="contenedor-img">
+                    <img src="${imagenUrl}" 
+                         alt="${propiedad.tipo_alojamiento} en ${propiedad.ciudad}" 
+                         class="img-condominio"
+                         onerror="this.src='../assets/img/placeholder.png';">
                 </div>
-            `;
-            
-            document.getElementById('contenedorDetalle').innerHTML = html;
-            
-            // Configurar fecha mínima (hoy)
-            const hoy = new Date().toISOString().split('T')[0];
-            document.getElementById('fechaLlegada').min = hoy;
-            document.getElementById('fechaSalida').min = hoy;
-        }
-        
-        async function abrirModalReserva() {
-            // Verificar si el usuario está logueado
-            const logueado = await verificarSesion();
-            
-            if (!logueado) {
-                if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
-                    // Guardar la propiedad actual para regresar después del login
-                    sessionStorage.setItem('regresar_propiedad', propiedadId);
-                    window.location.href = 'Login.html';
-                }
-                return;
-            }
-            
-            // Si está logueado, abrir el modal normalmente
-            document.getElementById('modalReserva').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+                <div class="info-condominio">
+                    <h3 class="titulo-condominio">${propiedad.tipo_alojamiento} en ${propiedad.ciudad}</h3>
+                    <p class="descripcion-detalle">${propiedad.direccion}</p>
+                    <p class="descripcion-detalle">${propiedad.ciudad}, ${propiedad.estado}</p>
+                    
+                    <div class="descripcion-propiedad">
+                        <h4>Descripción:</h4>
+                        <p>${propiedad.descripcion}</p>
+                    </div>
+                    
+                    <button class="btn-ver-detalles" onclick="abrirModalAmenidades()" style="margin: 20px 0; padding: 12px 24px; background: #5B8A8F; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600;">
+                        Incluye
+                    </button>
+                    
+                    <p class="precio">$${precioFormateado} MXN <span class="noches">por ${numeroNoches} ${textoNoches}</span></p>
+                    <div class="rating">
+                        <span class="estrella">★</span>
+                        <span class="valor-rating">5.0</span>
+                    </div>
+                    <p class="anfitrion-info">Anfitrión: ${propiedad.nombre_anfitrion}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('contenedorDetalle').innerHTML = html;
+    
+    // Configurar fecha mínima (hoy)
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fechaLlegada').min = hoy;
+    document.getElementById('fechaSalida').min = hoy;
+}
 
-        function cerrarModalReserva() {
-            document.getElementById('modalReserva').classList.remove('active');
-            document.body.style.overflow = 'auto';
+async function abrirModalReserva() {
+    // Verificar si el usuario está logueado
+    const logueado = await verificarSesionYActualizarMenu();
+    
+    if (!logueado) {
+        if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
+            sessionStorage.setItem('regresar_propiedad', propiedadId);
+            window.location.href = 'Login.html';
         }
+        return;
+    }
+    
+    // Si está logueado, abrir el modal normalmente
+    document.getElementById('modalReserva').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
-        function cerrarModalSiFueraClick(event) {
-            if (event.target.id === 'modalReserva') {
+function cerrarModalReserva() {
+    document.getElementById('modalReserva').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function cerrarModalSiFueraClick(event) {
+    if (event.target.id === 'modalReserva') {
+        cerrarModalReserva();
+    }
+}
+
+function cambiarHuespedes(cambio) {
+    numHuespedes += cambio;
+    if (numHuespedes < 0) numHuespedes = 0;
+    
+    document.getElementById('numHuespedes').textContent = numHuespedes;
+    document.getElementById('btnMenos').disabled = numHuespedes === 0;
+}
+
+function calcularTotal() {
+    const fechaLlegada = document.getElementById('fechaLlegada').value;
+    const fechaSalida = document.getElementById('fechaSalida').value;
+    
+    if (!fechaLlegada || !fechaSalida || !propiedadActual) {
+        document.getElementById('infoReserva').style.display = 'none';
+        return;
+    }
+
+    const fecha1 = new Date(fechaLlegada);
+    const fecha2 = new Date(fechaSalida);
+    const diffTime = Math.abs(fecha2 - fecha1);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) {
+        const precioNoche = parseFloat(propiedadActual.precio_noche);
+        const total = precioNoche * diffDays;
+        const nochesMinimas = propiedadActual.numero_noches || 1;
+
+        document.getElementById('nochesSeleccionadas').textContent = diffDays + (diffDays === 1 ? ' noche' : ' noches');
+        document.getElementById('precioPorNoche').textContent = '$' + precioNoche.toLocaleString('es-MX') + ' MXN';
+        document.getElementById('precioTotal').textContent = '$' + total.toLocaleString('es-MX') + ' MXN';
+        document.getElementById('infoReserva').style.display = 'block';
+
+        const btnConfirmar = document.getElementById('btnConfirmar');
+        if (diffDays < nochesMinimas) {
+            btnConfirmar.style.background = '#ccc';
+            btnConfirmar.style.cursor = 'not-allowed';
+            btnConfirmar.disabled = true;
+            btnConfirmar.textContent = `Mínimo ${nochesMinimas} ${nochesMinimas === 1 ? 'noche' : 'noches'}`;
+        } else {
+            btnConfirmar.style.background = '';
+            btnConfirmar.style.cursor = 'pointer';
+            btnConfirmar.disabled = false;
+            btnConfirmar.textContent = 'Continuar';
+        }
+    } else {
+        document.getElementById('infoReserva').style.display = 'none';
+    }
+}
+
+async function confirmarReservacion() {
+    const fechaLlegada = document.getElementById('fechaLlegada').value;
+    const fechaSalida = document.getElementById('fechaSalida').value;
+    
+    if (!fechaLlegada || !fechaSalida) {
+        alert('Por favor selecciona las fechas de llegada y salida');
+        return;
+    }
+
+    if (numHuespedes === 0) {
+        alert('Por favor indica el número de huéspedes');
+        return;
+    }
+
+    // Validar mínimo de noches
+    const fecha1 = new Date(fechaLlegada);
+    const fecha2 = new Date(fechaSalida);
+    const diffTime = Math.abs(fecha2 - fecha1);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const nochesMinimas = propiedadActual.numero_noches || 1;
+
+    if (diffDays < nochesMinimas) {
+        alert(`Esta propiedad requiere un mínimo de ${nochesMinimas} ${nochesMinimas === 1 ? 'noche' : 'noches'}`);
+        return;
+    }
+    
+    // Verificar sesión antes de continuar
+    const logueado = await verificarSesionYActualizarMenu();
+    
+    if (!logueado) {
+        if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
+            sessionStorage.setItem('reserva_pendiente', JSON.stringify({
+                propiedad_id: propiedadId,
+                fecha_inicio: fechaLlegada,
+                fecha_fin: fechaSalida,
+                num_huespedes: numHuespedes
+            }));
+            window.location.href = 'Login.html';
+        }
+        return;
+    }
+    
+    window.location.href = `ConfirmarYPagar.php?propiedad_id=${propiedadId}&fecha_inicio=${fechaLlegada}&fecha_fin=${fechaSalida}&num_huespedes=${numHuespedes}`;
+}
+
+// Funciones para modal de amenidades
+function abrirModalAmenidades() {
+    document.getElementById('modalAmenidades').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalAmenidades() {
+    document.getElementById('modalAmenidades').classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+function cerrarModalSiClickFuera(event) {
+    if (event.target.id === 'modalAmenidades') {
+        cerrarModalAmenidades();
+    }
+}
+
+// INICIALIZACIÓN
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log(' Iniciando DetallePropiedad...');
+    
+    // 1. Verificar sesión y actualizar menú PRIMERO
+    await verificarSesionYActualizarMenu();
+    
+    // 2. Cargar datos de la propiedad
+    await cargarDetallePropiedad();
+    
+    // 3. Event listeners de fechas
+    document.getElementById('fechaLlegada').addEventListener('change', function() {
+        const fechaLlegada = this.value;
+        if (fechaLlegada) {
+            const fecha = new Date(fechaLlegada);
+            fecha.setDate(fecha.getDate() + 1);
+            document.getElementById('fechaSalida').min = fecha.toISOString().split('T')[0];
+            calcularTotal();
+        }
+    });
+
+    document.getElementById('fechaSalida').addEventListener('change', calcularTotal);
+
+    // 4. Cerrar modales con ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (document.getElementById('modalReserva').classList.contains('active')) {
                 cerrarModalReserva();
             }
-        }
-
-        function cambiarHuespedes(cambio) {
-            numHuespedes += cambio;
-            if (numHuespedes < 0) numHuespedes = 0;
-            
-            document.getElementById('numHuespedes').textContent = numHuespedes;
-            document.getElementById('btnMenos').disabled = numHuespedes === 0;
-        }
-
-        function calcularTotal() {
-            const fechaLlegada = document.getElementById('fechaLlegada').value;
-            const fechaSalida = document.getElementById('fechaSalida').value;
-            
-            if (!fechaLlegada || !fechaSalida || !propiedadActual) {
-                document.getElementById('infoReserva').style.display = 'none';
-                return;
-            }
-
-            const fecha1 = new Date(fechaLlegada);
-            const fecha2 = new Date(fechaSalida);
-            const diffTime = Math.abs(fecha2 - fecha1);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 0) {
-                const precioNoche = parseFloat(propiedadActual.precio_noche);
-                const total = precioNoche * diffDays;
-                const nochesMinimas = propiedadActual.numero_noches || 1;
-
-                document.getElementById('nochesSeleccionadas').textContent = diffDays + (diffDays === 1 ? ' noche' : ' noches');
-                document.getElementById('precioPorNoche').textContent = '$' + precioNoche.toLocaleString('es-MX') + ' MXN';
-                document.getElementById('precioTotal').textContent = '$' + total.toLocaleString('es-MX') + ' MXN';
-                document.getElementById('infoReserva').style.display = 'block';
-
-                // Mostrar advertencia si no cumple con mínimo de noches
-                const btnConfirmar = document.getElementById('btnConfirmar');
-                if (diffDays < nochesMinimas) {
-                    btnConfirmar.style.background = '#ccc';
-                    btnConfirmar.style.cursor = 'not-allowed';
-                    btnConfirmar.disabled = true;
-                    btnConfirmar.textContent = `Mínimo ${nochesMinimas} ${nochesMinimas === 1 ? 'noche' : 'noches'}`;
-                } else {
-                    btnConfirmar.style.background = '';
-                    btnConfirmar.style.cursor = 'pointer';
-                    btnConfirmar.disabled = false;
-                    btnConfirmar.textContent = 'Continuar';
-                }
-            } else {
-                document.getElementById('infoReserva').style.display = 'none';
-            }
-        }
-
-        async function confirmarReservacion() {
-            const fechaLlegada = document.getElementById('fechaLlegada').value;
-            const fechaSalida = document.getElementById('fechaSalida').value;
-            
-            if (!fechaLlegada || !fechaSalida) {
-                alert('Por favor selecciona las fechas de llegada y salida');
-                return;
-            }
-
-            if (numHuespedes === 0) {
-                alert('Por favor indica el número de huéspedes');
-                return;
-            }
-
-            // Validar mínimo de noches
-            const fecha1 = new Date(fechaLlegada);
-            const fecha2 = new Date(fechaSalida);
-            const diffTime = Math.abs(fecha2 - fecha1);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const nochesMinimas = propiedadActual.numero_noches || 1;
-
-            if (diffDays < nochesMinimas) {
-                alert(`Esta propiedad requiere un mínimo de ${nochesMinimas} ${nochesMinimas === 1 ? 'noche' : 'noches'}`);
-                return;
-            }
-            
-            // Verificar si el usuario está logueado
-            const logueado = await verificarSesion();
-            
-            if (!logueado) {
-                if (confirm('Debes iniciar sesión para hacer una reservación.\n\n¿Deseas iniciar sesión ahora?')) {
-                    sessionStorage.setItem('reserva_pendiente', JSON.stringify({
-                        propiedad_id: propiedadId,
-                        fecha_inicio: fechaLlegada,
-                        fecha_fin: fechaSalida,
-                        num_huespedes: numHuespedes
-                    }));
-                    window.location.href = 'Login.html';
-                }
-                return;
-            }
-            
-            window.location.href = `ConfirmarYPagar.php?propiedad_id=${propiedadId}&fecha_inicio=${fechaLlegada}&fecha_fin=${fechaSalida}&num_huespedes=${numHuespedes}`;
-        }
-
-        // Funciones para modal de amenidades
-        function abrirModalAmenidades() {
-            document.getElementById('modalAmenidades').classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function cerrarModalAmenidades() {
-            document.getElementById('modalAmenidades').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        function cerrarModalSiClickFuera(event) {
-            if (event.target.id === 'modalAmenidades') {
+            if (document.getElementById('modalAmenidades').classList.contains('active')) {
                 cerrarModalAmenidades();
             }
         }
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            await verificarSesion();
-            await cargarDetallePropiedad();
-            
-            document.getElementById('fechaLlegada').addEventListener('change', function() {
-                const fechaLlegada = this.value;
-                if (fechaLlegada) {
-                    const fecha = new Date(fechaLlegada);
-                    fecha.setDate(fecha.getDate() + 1);
-                    document.getElementById('fechaSalida').min = fecha.toISOString().split('T')[0];
-                    calcularTotal();
-                }
-            });
-
-            document.getElementById('fechaSalida').addEventListener('change', calcularTotal);
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    if (document.getElementById('modalReserva').classList.contains('active')) {
-                        cerrarModalReserva();
-                    }
-                    if (document.getElementById('modalAmenidades').classList.contains('active')) {
-                        cerrarModalAmenidades();
-                    }
-                }
-            });
-            
-            const reservaPendiente = sessionStorage.getItem('reserva_pendiente');
-            if (reservaPendiente) {
-                const datos = JSON.parse(reservaPendiente);
-                sessionStorage.removeItem('reserva_pendiente');
-                window.location.href = `ConfirmarYPagar.php?propiedad_id=${datos.propiedad_id}&fecha_inicio=${datos.fecha_inicio}&fecha_fin=${datos.fecha_fin}&num_huespedes=${datos.num_huespedes}`;
-            }
-            
-            // Verificar si regresó después de iniciar sesión
-            const regresarPropiedad = sessionStorage.getItem('regresar_propiedad');
-            if (regresarPropiedad && usuarioLogueado) {
-                sessionStorage.removeItem('regresar_propiedad');
-                // Abrir el modal automáticamente
-                setTimeout(() => {
-                    document.getElementById('modalReserva').classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                }, 500);
-            }
-        });
-    </script>
+    });
+    
+    // 5. Manejar reserva pendiente
+    const reservaPendiente = sessionStorage.getItem('reserva_pendiente');
+    if (reservaPendiente) {
+        const datos = JSON.parse(reservaPendiente);
+        sessionStorage.removeItem('reserva_pendiente');
+        window.location.href = `ConfirmarYPagar.php?propiedad_id=${datos.propiedad_id}&fecha_inicio=${datos.fecha_inicio}&fecha_fin=${datos.fecha_fin}&num_huespedes=${datos.num_huespedes}`;
+    }
+    
+    // 6. Abrir modal si regresó después de login
+    const regresarPropiedad = sessionStorage.getItem('regresar_propiedad');
+    if (regresarPropiedad && usuarioLogueado) {
+        sessionStorage.removeItem('regresar_propiedad');
+        setTimeout(() => {
+            document.getElementById('modalReserva').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }, 500);
+    }
+    
+    console.log(' DetallePropiedad inicializado');
+});
+         </script>
 </body>
 </html>

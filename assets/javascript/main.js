@@ -1,4 +1,3 @@
-
 const API_URL = '../app/AuthController.php';
 
 // =======================================================================
@@ -160,9 +159,8 @@ function inicializarMenu() {
     }
 }
 
-// =======================================================================
+
 //                       VERIFICAR SESIÓN
-// =======================================================================
 async function verificarSesion() {
     console.log('Verificando sesión...');
     
@@ -192,6 +190,19 @@ async function verificarSesion() {
             
             if (nombreUsuarioMenu) nombreUsuarioMenu.textContent = resultado.usuario.nombre;
             if (emailUsuarioMenu) emailUsuarioMenu.textContent = resultado.usuario.email;
+            
+            //  DETECTAR SI ES ADMIN Y CAMBIAR ENLACE DE PERFIL
+            const enlacePerfil = document.getElementById('enlacePerfil');
+            if (enlacePerfil) {
+                // Si el usuario es admin (ID = 14), cambiar el enlace a AdminPanel.php
+                if (resultado.usuario.id == 14) {
+                    enlacePerfil.href = 'AdminPanel.php';
+                    console.log(' Admin detectado - Enlace de perfil cambiado a AdminPanel.php');
+                } else {
+                    enlacePerfil.href = 'Perfil.html';
+                    console.log(' Usuario normal - Enlace de perfil: Perfil.html');
+                }
+            }
             
             return true;
             
